@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# vim: noai:ts=4:sw=4:expandtab
+# shellcheck source=/dev/null
+# shellcheck disable=2009
 #
 # moodfetch - ((experimental))
 #
@@ -11,21 +14,25 @@
 # disk space, and network activity, in a visually (sarcastic) manner,
 # using ASCII art (emojis for now) and colors, somehow similar to neofetch but dumber.
 
+# Set strict mode for better error handling
 readonly proc_uptime_path="/proc/uptime"
 readonly battery_base="/sys/class/power_supply/BAT0"
 readonly battery_capacity_path="${battery_base}/capacity"
 readonly battery_status_path="${battery_base}/status"
 
+# Function to read system uptime in seconds as a float
 read_system_uptime_seconds_as_float() {
   awk '{print $1}' "${proc_uptime_path}"
 }
 
+# Function to calculate system uptime in hours as an integer
 calculate_system_uptime_hours_integer() {
   local uptime_seconds_float
   uptime_seconds_float="$(read_system_uptime_seconds_as_float)"
   awk -v secs="${uptime_seconds_float}" 'BEGIN { printf("%d\n", int(secs/3600)) }'
 }
 
+# Function to read battery percentage if available
 read_battery_percentage_if_available() {
   if [ -r "${battery_capacity_path}" ]; then
     cat "${battery_capacity_path}"
@@ -34,6 +41,7 @@ read_battery_percentage_if_available() {
   fi
 }
 
+# Function to check if the battery is plugged in (best effort)
 is_battery_plugged_in_best_effort() {
   if [ -r "${battery_status_path}" ]; then
     grep -qE "Charging|Full" "${battery_status_path}" && return 0 || return 1
@@ -41,26 +49,35 @@ is_battery_plugged_in_best_effort() {
   return 1
 }
 
+# --- MAIN ---
 main() {
+  # Fetch system uptime and battery percentage
   local system_uptime_hours
   system_uptime_hours="$(calculate_system_uptime_hours_integer)"
 
+  # Fetch battery percentage if available
   local battery_percentage
   battery_percentage="$(read_battery_percentage_if_available)"
 
-  local is_plugged=1
+  # Check if battery is plugged in
+  local not_plugged=1
   if is_battery_plugged_in_best_effort; then
-    is_plugged=0 # not plugged in
+    not_plugged=0 # plugged in
   else
-    is_plugged=1 # plugged in
+    not_plugged=1 # not plugged in
   fi
 
+  # Display mood based on system metrics
   echo "😏"
-  if [ -n "${battery_percentage}" ] && [ "${battery_percentage}" -lt 20 ] && [ "${is_plugged}" -eq 1 ]; then
+  if [ -n "${battery_percentage}" ] && [ "${battery_percentage}" -lt 20 ] && [ "${not_plugged}" -eq 1 ]; then
     echo "Battery at ${battery_percentage}% — bold of you to trust unsaved work."
+  elif [ "${system_uptime_hours}" -gt 48 ]; then
+    echo "Uptime ${system_uptime_hours}h — I’m basically a night-shift barista. Reboot therapy?"
   else
     echo "Uptime: ${system_uptime_hours}h, Battery: ${battery_percentage}%"
   fi
 }
+# ------
 
+# Entry point
 main "$@"

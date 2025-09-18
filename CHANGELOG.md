@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.7] - 2025-09-18
+
+- Feature: print a zombie-themed sarcastic line when system uptime > 48 hours (lower priority than low battery).
+
 ## [0.1.6] - 2025-09-18
 
 - Feature: if battery < 20% and not charging, print a sarcastic low-battery message.
