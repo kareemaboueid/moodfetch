@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+#
+# moodfetch - ((experimental))
+#
+# @author Kareem Aboueid
+# Moodfetch: A command-line tool for displaying your system's mood.
+# https://github.com/kareemaboueid/moodfetch
+#
+# Hi, This is an ((experimental)) project for fetching and displaying system "mood"
+# based on various system metrics, such as CPU usage, memory usage,
+# disk space, and network activity, in a visually (sarcastic) manner,
+# using ASCII art (emojis for now) and colors, somehow similar to neofetch but dumber.
+
+echo "🙃"
+echo "Hello World. as always!"

@@ -1,0 +1,13 @@
+# Moodfetch
+
+A command-line tool for displaying your system's "mood".
+
+_Hi, This is an ((experimental)) project for fetching and displaying system "mood"
+based on various system metrics, such as CPU usage, memory usage
+disk space, and network activity, in a visually (sarcastic) manner
+using ASCII art (emojis for now) and colors, somehow similar to [neofetch](https://github.com/dylanaraps/neofetch) but dumber_
+
+## TO DO List (for now)
+
+- Replace the static emoji/text with something based on real system info. (uptime, battery, maybe CPU later? and other stuff)
+- Add a bunch of messages instead of one boring line. (maybe Randomize them)
