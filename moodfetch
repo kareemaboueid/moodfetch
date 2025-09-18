@@ -11,5 +11,7 @@
 # disk space, and network activity, in a visually (sarcastic) manner,
 # using ASCII art (emojis for now) and colors, somehow similar to neofetch but dumber.
 
-echo "🙃"
-echo "Hello World. as always!"
+uptime_hours=$(awk '{printf("%.1f\n", $1/3600)}' /proc/uptime)
+
+echo "🕛"
+echo "Uptime: ${uptime_hours} hours"

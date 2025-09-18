@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.3] - 2025-09-18
+
+- Added uptime detection from `/proc/uptime`.
+
 ## [0.1.2] - 2025-09-18
 
 - A little polish to the README.md file.
