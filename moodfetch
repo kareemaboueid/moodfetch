@@ -12,25 +12,33 @@
 # using ASCII art (emojis for now) and colors, somehow similar to neofetch but dumber.
 
 readonly proc_uptime_path="/proc/uptime"
+readonly battery_base="/sys/class/power_supply/BAT0"
+readonly battery_capacity_path="${battery_base}/capacity"
+readonly battery_status_path="${battery_base}/status"
 
 read_system_uptime_seconds_as_float() {
   awk '{print $1}' "${proc_uptime_path}"
 }
 
 calculate_system_uptime_hours_integer() {
-  # floor(seconds/3600)
   local uptime_seconds_float
   uptime_seconds_float="$(read_system_uptime_seconds_as_float)"
   awk -v secs="${uptime_seconds_float}" 'BEGIN { printf("%d\n", int(secs/3600)) }'
 }
 
 read_battery_percentage_if_available() {
-  local capacity_path="/sys/class/power_supply/BAT0/capacity"
-  if [ -r "${capacity_path}" ]; then
-    cat "${capacity_path}"
+  if [ -r "${battery_capacity_path}" ]; then
+    cat "${battery_capacity_path}"
   else
     printf ""
   fi
+}
+
+is_battery_plugged_in_best_effort() {
+  if [ -r "${battery_status_path}" ]; then
+    grep -qE "Charging|Full" "${battery_status_path}" && return 0 || return 1
+  fi
+  return 1
 }
 
 main() {
@@ -40,8 +48,19 @@ main() {
   local battery_percentage
   battery_percentage="$(read_battery_percentage_if_available)"
 
+  local is_plugged=1
+  if is_battery_plugged_in_best_effort; then
+    is_plugged=0 # not plugged in
+  else
+    is_plugged=1 # plugged in
+  fi
+
   echo "😏"
-  echo "Uptime: ${system_uptime_hours}h, Battery: ${battery_percentage}%"
+  if [ -n "${battery_percentage}" ] && [ "${battery_percentage}" -lt 20 ] && [ "${is_plugged}" -eq 1 ]; then
+    echo "Battery at ${battery_percentage}% — bold of you to trust unsaved work."
+  else
+    echo "Uptime: ${system_uptime_hours}h, Battery: ${battery_percentage}%"
+  fi
 }
 
 main "$@"

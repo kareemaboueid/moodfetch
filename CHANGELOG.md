@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.6] - 2025-09-18
+
+- Feature: if battery < 20% and not charging, print a sarcastic low-battery message.
+
 ## [0.1.5] - 2025-09-18
 
 - Bugfix: correctly convert float uptime seconds from `/proc/uptime` to integer hours with `awk`.
