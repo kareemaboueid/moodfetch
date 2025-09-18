@@ -6,12 +6,10 @@
 
 <p align="center" dir="auto">A command-line tool for displaying your system's "mood".</p>
 
-<blockquote>
 _Hi, This is an ((experimental)) project for fetching and displaying system "mood"
 based on various system metrics, such as CPU usage, memory usage
 disk space, and network activity, in a visually (sarcastic) manner
 using ASCII art (emojis for now) and colors, somehow similar to [neofetch](https://github.com/dylanaraps/neofetch) but dumber_
-</blockquote>
 
 ## TO DO List (for now)
 

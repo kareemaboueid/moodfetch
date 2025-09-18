@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.4] - 2025-09-18
+
+- Added crude battery percentage detection from `/sys/class/power_supply/BAT0/capacity`.
+
 ## [0.1.3] - 2025-09-18
 
 - Added uptime detection from `/proc/uptime`.

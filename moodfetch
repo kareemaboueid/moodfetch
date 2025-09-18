@@ -13,5 +13,10 @@
 
 uptime_hours=$(awk '{printf("%.1f\n", $1/3600)}' /proc/uptime)
 
-echo "🕛"
-echo "Uptime: ${uptime_hours} hours"
+battery_capacity=""
+if [ -r /sys/class/power_supply/BAT0/capacity ]; then
+  battery_capacity=$(cat /sys/class/power_supply/BAT0/capacity) %
+fi
+
+echo "🟡"
+echo "Uptime: ${uptime_hours} hours, Battery: ${battery_capacity}"
