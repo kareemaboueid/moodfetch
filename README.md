@@ -1,3 +1,5 @@
+<h1 align="center" dir="auto">moodfetch</h1>
+
 <p align="center">
   <img src="./logo/moodfetch.png" alt="Moodfetch Logo" width="200"/>
 </p>

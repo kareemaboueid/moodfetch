@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.2] - 2025-09-18
+
+- A little polish to the README.md file.
+
 ## [0.1.1] - 2025-09-18
 
 - made a logo for moodfetch
