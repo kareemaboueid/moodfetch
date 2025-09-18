@@ -13,5 +13,4 @@ using ASCII art (emojis for now) and colors, somehow similar to [neofetch](https
 
 ## TO DO List (for now)
 
-- Replace the static emoji/text with something based on real system info. (uptime, battery, maybe CPU later? and other stuff)
-- Add a bunch of messages instead of one boring line. (maybe Randomize them)
+- enforce two-line output format only
