@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.5] - 2025-09-18
+
+- Bugfix: correctly convert float uptime seconds from `/proc/uptime` to integer hours with `awk`.
+
+- Read battery percentage if available.
+
 ## [0.1.4] - 2025-09-18
 
 - Added crude battery percentage detection from `/sys/class/power_supply/BAT0/capacity`.

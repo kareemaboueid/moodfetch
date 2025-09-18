@@ -11,12 +11,37 @@
 # disk space, and network activity, in a visually (sarcastic) manner,
 # using ASCII art (emojis for now) and colors, somehow similar to neofetch but dumber.
 
-uptime_hours=$(awk '{printf("%.1f\n", $1/3600)}' /proc/uptime)
+readonly proc_uptime_path="/proc/uptime"
 
-battery_capacity=""
-if [ -r /sys/class/power_supply/BAT0/capacity ]; then
-  battery_capacity=$(cat /sys/class/power_supply/BAT0/capacity) %
-fi
+read_system_uptime_seconds_as_float() {
+  awk '{print $1}' "${proc_uptime_path}"
+}
 
-echo "🟡"
-echo "Uptime: ${uptime_hours} hours, Battery: ${battery_capacity}"
+calculate_system_uptime_hours_integer() {
+  # floor(seconds/3600)
+  local uptime_seconds_float
+  uptime_seconds_float="$(read_system_uptime_seconds_as_float)"
+  awk -v secs="${uptime_seconds_float}" 'BEGIN { printf("%d\n", int(secs/3600)) }'
+}
+
+read_battery_percentage_if_available() {
+  local capacity_path="/sys/class/power_supply/BAT0/capacity"
+  if [ -r "${capacity_path}" ]; then
+    cat "${capacity_path}"
+  else
+    printf ""
+  fi
+}
+
+main() {
+  local system_uptime_hours
+  system_uptime_hours="$(calculate_system_uptime_hours_integer)"
+
+  local battery_percentage
+  battery_percentage="$(read_battery_percentage_if_available)"
+
+  echo "😏"
+  echo "Uptime: ${system_uptime_hours}h, Battery: ${battery_percentage}%"
+}
+
+main "$@"
