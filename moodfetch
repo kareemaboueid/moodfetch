@@ -14,25 +14,17 @@
 # disk space, and network activity, in a visually (sarcastic) manner,
 # using ASCII art (emojis for now) and colors, somehow similar to neofetch but dumber.
 
-# Set strict mode for better error handling
 readonly proc_uptime_path="/proc/uptime"
 readonly battery_base="/sys/class/power_supply/BAT0"
 readonly battery_capacity_path="${battery_base}/capacity"
 readonly battery_status_path="${battery_base}/status"
 
-# Function to read system uptime in seconds as a float
-read_system_uptime_seconds_as_float() {
-  awk '{print $1}' "${proc_uptime_path}"
+read_system_uptime_hours_integer() {
+  local seconds_float
+  seconds_float="$(awk '{print $1}' "${proc_uptime_path}")"
+  awk -v secs="${seconds_float}" 'BEGIN { printf("%d\n", int(secs/3600)) }'
 }
 
-# Function to calculate system uptime in hours as an integer
-calculate_system_uptime_hours_integer() {
-  local uptime_seconds_float
-  uptime_seconds_float="$(read_system_uptime_seconds_as_float)"
-  awk -v secs="${uptime_seconds_float}" 'BEGIN { printf("%d\n", int(secs/3600)) }'
-}
-
-# Function to read battery percentage if available
 read_battery_percentage_if_available() {
   if [ -r "${battery_capacity_path}" ]; then
     cat "${battery_capacity_path}"
@@ -41,43 +33,49 @@ read_battery_percentage_if_available() {
   fi
 }
 
-# Function to check if the battery is plugged in (best effort)
-is_battery_plugged_in_best_effort() {
+is_battery_currently_plugged_in() {
   if [ -r "${battery_status_path}" ]; then
     grep -qE "Charging|Full" "${battery_status_path}" && return 0 || return 1
   fi
   return 1
 }
 
-# --- MAIN ---
-main() {
-  # Fetch system uptime and battery percentage
-  local system_uptime_hours
-  system_uptime_hours="$(calculate_system_uptime_hours_integer)"
+choose_mood_message_two_line() {
+  local uptime_hours="$1"
+  local battery_pct="$2"
+  local battery_plugged_flag="$3"
 
-  # Fetch battery percentage if available
+  if [ -n "${battery_pct}" ] && [ "${battery_pct}" -lt 20 ] && [ "${battery_plugged_flag}" -ne 0 ]; then
+    echo "🔋"
+    echo "Battery at ${battery_pct}% — bold of you to trust unsaved work."
+    return
+  fi
+
+  if [ "${uptime_hours}" -gt 48 ]; then
+    echo "🧟"
+    echo "Uptime ${uptime_hours}h — I’m basically a night-shift barista. Reboot therapy?"
+    return
+  fi
+
+  echo "😏"
+  echo "Everything’s suspiciously fine — which statistically means chaos is one tab away."
+}
+
+main() {
+  local system_uptime_hours
+  system_uptime_hours="$(read_system_uptime_hours_integer)"
+
   local battery_percentage
   battery_percentage="$(read_battery_percentage_if_available)"
 
-  # Check if battery is plugged in
   local not_plugged=1
-  if is_battery_plugged_in_best_effort; then
-    not_plugged=0 # plugged in
+  if is_battery_currently_plugged_in; then
+    not_plugged=0
   else
-    not_plugged=1 # not plugged in
+    not_plugged=1
   fi
 
-  # Display mood based on system metrics
-  echo "😏"
-  if [ -n "${battery_percentage}" ] && [ "${battery_percentage}" -lt 20 ] && [ "${not_plugged}" -eq 1 ]; then
-    echo "Battery at ${battery_percentage}% — bold of you to trust unsaved work."
-  elif [ "${system_uptime_hours}" -gt 48 ]; then
-    echo "Uptime ${system_uptime_hours}h — I’m basically a night-shift barista. Reboot therapy?"
-  else
-    echo "Uptime: ${system_uptime_hours}h, Battery: ${battery_percentage}%"
-  fi
+  choose_mood_message_two_line "${system_uptime_hours}" "${battery_percentage}" "${not_plugged}"
 }
-# ------
 
-# Entry point
 main "$@"

@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.9] - 2025-09-19
+
+- Refactor: enforce strict two-line output format: first line emoji, second line message. Remove raw metric prints.
+
 ## [0.1.8] - 2025-09-18
 
 - Added `.gitignore`
