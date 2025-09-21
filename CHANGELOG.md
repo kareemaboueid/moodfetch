@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.5]
+
+- Added disk usage moods:
+  - Spacious (<70%)
+  - Crowded (<90%)
+  - Suffocating (>=90%)
+- Terminal now clears before showing ASCII art and mood.
+
 ## [0.1.4]
 
 - Added RAM usage moods.

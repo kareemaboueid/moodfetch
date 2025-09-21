@@ -34,8 +34,16 @@ get_ram_usage() {
   fi
 }
 
+# helper: read root filesystem usage percentage
+get_disk_usage() {
+  df -P / | awk 'NR==2 {print $5}' | sed 's/%//'
+}
+
 # --- MAIN ---
 main() {
+  # clear the terminal for a fresh mood screen
+  clear
+
   # print ascii logo
   cat "./logo/ascii-art.txt"
   echo ""
@@ -68,13 +76,12 @@ main() {
     elif (( $(echo "$cpu_load < 1.0" | bc -l) )); then
       mood="CPU load ${cpu_load} — I'm working, but not filing complaints (yet)."
     elif (( $(echo "$cpu_load < 2.0" | bc -l) )); then
-      # new middle ground added for nuance
       mood="CPU load ${cpu_load} — I'm panting, but still alive."
     else
       mood="CPU load ${cpu_load} — everything feels like a DDoS, and you're the attacker."
     fi
 
-    # and if CPU load looks fine, check RAM usage
+    # check RAM usage if CPU is chill
     if [ -z "$mood" ] || [[ "$mood" =~ "hammocks" || "$mood" =~ "complaints" ]]; then
       ram_usage=$(get_ram_usage)
 
@@ -84,6 +91,19 @@ main() {
         mood="RAM usage ${ram_usage}% — brain cluttered with tabs, but surviving."
       else
         mood="RAM usage ${ram_usage}% — memory jam, paging out dreams."
+      fi
+    fi
+
+    # check disk usage if RAM looks okay
+    if [ -z "$mood" ] || [[ "$mood" =~ "calm" || "$mood" =~ "surviving" ]]; then
+      disk_usage=$(get_disk_usage)
+
+      if [ "$disk_usage" -lt 70 ]; then
+        mood="Disk usage ${disk_usage}% — spacious, like an empty warehouse."
+      elif [ "$disk_usage" -lt 90 ]; then
+        mood="Disk usage ${disk_usage}% — getting crowded with your questionable downloads."
+      else
+        mood="Disk usage ${disk_usage}% — I'm suffocating under your hoarding habits."
       fi
     fi
   fi
