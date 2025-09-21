@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.2]
+
+- Added battery awareness with moods.
+- Battery moods override uptime moods when available.
+
 ## [0.1.1]
 
 - Added uptime metric in hours.

@@ -3,6 +3,19 @@
 # shellcheck source=/dev/null
 # shellcheck disable=2009
 
+# helper: read battery percentage and charging status if available
+get_battery_status() {
+  # many Linux distros expose this under /sys/class/power_supply
+  local bat_path="/sys/class/power_supply/BAT0"
+  if [ -d "$bat_path" ]; then
+    local capacity=$(cat "$bat_path/capacity" 2>/dev/null)
+    local status=$(cat "$bat_path/status" 2>/dev/null)
+    echo "$capacity $status"
+  else
+    echo "" # no battery info available
+  fi
+}
+
 # --- MAIN ---
 main() {
   # print ascii logo
@@ -11,19 +24,38 @@ main() {
   echo -e "\e[1mMood\e[0m"
   echo ""
 
-  # calculate uptime in hours
-  uptime_hours=$(awk '{printf("%.1f", $1/3600)}' /proc/uptime)
+  # first, check if we have a battery and how it feels
+  battery_info=$(get_battery_status)
 
-  # sarcastic mood selection
-  if (( $(echo "$uptime_hours < 1" | bc -l) )); then
-    mood="Freshly booted, still smelling like a new car."
-  elif (( $(echo "$uptime_hours < 24" | bc -l) )); then
-    mood="Moderately awake. Let's not crash… yet."
+  if [ -n "$battery_info" ]; then
+    battery_percentage=$(echo "$battery_info" | awk '{print $1}')
+    battery_state=$(echo "$battery_info" | awk '{print $2}')
+
+    # sarcasm based on battery life
+    if [ "$battery_state" = "Charging" ]; then
+      mood="Ah, finally plugged in. Feels like sipping espresso shots of electricity."
+    elif [ "$battery_percentage" -le 15 ]; then
+      mood="Running at ${battery_percentage}% — basically living on borrowed electrons."
+    elif [ "$battery_percentage" -le 40 ]; then
+      mood="Battery ${battery_percentage}% — alive but a bit hangry."
+    else
+      mood="Battery ${battery_percentage}% and holding steady. I can breathe easy."
+    fi
+
   else
-    mood="Been running for ${uptime_hours} hours. Basically a zombie server now."
+    # fallback: use uptime mood when no battery present
+    uptime_hours=$(awk '{printf("%.1f", $1/3600)}' /proc/uptime)
+
+    if (( $(echo "$uptime_hours < 1" | bc -l) )); then
+      mood="Freshly booted, still smelling like a new car."
+    elif (( $(echo "$uptime_hours < 24" | bc -l) )); then
+      mood="Moderately awake. Let's not crash… yet."
+    else
+      mood="Been running for ${uptime_hours} hours. Basically a zombie server now."
+    fi
   fi
 
-  # print mood
+  # print the chosen mood
   echo "$mood"
   echo ""
 }
