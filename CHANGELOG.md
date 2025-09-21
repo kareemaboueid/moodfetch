@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.4]
+
+- Added RAM usage moods.
+- Memory moods trigger when CPU load is normal:
+  - Spacious (<50%)
+  - Cluttered (<80%)
+  - Jammed (>=80%)
+
 ## [0.1.3]
 
 - Added CPU load moods (normalized by core count).
