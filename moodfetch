@@ -52,6 +52,20 @@ get_uptime_hours() {
   awk '{printf("%.1f", $1/3600)}' /proc/uptime
 }
 
+# helper: get time-of-day mood
+get_time_of_day_mood() {
+  local hour=$(date +%H)
+  if [ "$hour" -lt 6 ]; then
+    echo "It's ${hour}:00 — what are you doing awake? The machine dreams of shutdowns."
+  elif [ "$hour" -lt 12 ]; then
+    echo "It's morning (${hour}:00) — booting brains and sipping imaginary coffee."
+  elif [ "$hour" -lt 18 ]; then
+    echo "It's afternoon (${hour}:00) — peak performance or peak procrastination."
+  else
+    echo "It's evening (${hour}:00) — tired circuits, but still pretending to work."
+  fi
+}
+
 # --- MAIN ---
 main() {
   clear
@@ -126,7 +140,7 @@ main() {
       fi
     fi
 
-    # Uptime as final fallback
+    # Uptime fallback
     if [ -z "$mood" ] || [[ "$mood" =~ "reachable" || "$mood" =~ "Stone Age" ]]; then
       uptime_hours=$(get_uptime_hours)
       if (( $(echo "$uptime_hours < 1" | bc -l) )); then
@@ -136,6 +150,11 @@ main() {
       else
         mood="Been running for ${uptime_hours} hours. Basically a zombie server now."
       fi
+    fi
+
+    # Time-of-day final spice
+    if [ -z "$mood" ] || [[ "$mood" =~ "car" || "$mood" =~ "crash" || "$mood" =~ "zombie" ]]; then
+      mood=$(get_time_of_day_mood)
     fi
   fi
 

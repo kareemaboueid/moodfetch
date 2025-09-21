@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.8]
+
+- Added time-of-day moods.
+- Time-of-day moods trigger as the ultimate fallback.
+
 ## [0.1.7]
 
 - Re-introduced uptime moods as the final fallback:
