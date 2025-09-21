@@ -3,6 +3,13 @@
 # shellcheck source=/dev/null
 # shellcheck disable=2009
 
+# Resolve script directory (source or installed)
+if [ -d "$(dirname -- "${BASH_SOURCE[0]}")/.." ]; then
+  script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+else
+  script_dir="/usr/local/share/moodfetch"
+fi
+
 # Resolve script directory so we can source sibling files reliably
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
