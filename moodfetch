@@ -5,7 +5,6 @@
 
 # helper: read battery percentage and charging status if available
 get_battery_status() {
-  # many Linux distros expose this under /sys/class/power_supply
   local bat_path="/sys/class/power_supply/BAT0"
   if [ -d "$bat_path" ]; then
     local capacity=$(cat "$bat_path/capacity" 2>/dev/null)
@@ -39,9 +38,17 @@ get_disk_usage() {
   df -P / | awk 'NR==2 {print $5}' | sed 's/%//'
 }
 
+# helper: check if the system has internet access
+get_network_status() {
+  if ping -q -c 1 -W 1 1.1.1.1 >/dev/null 2>&1; then
+    echo "online"
+  else
+    echo "offline"
+  fi
+}
+
 # --- MAIN ---
 main() {
-  # clear the terminal for a fresh mood screen
   clear
 
   # print ascii logo
@@ -50,7 +57,7 @@ main() {
   echo -e "\e[1mMood\e[0m"
   echo ""
 
-  # check battery first
+  # battery first
   battery_info=$(get_battery_status)
 
   if [ -n "$battery_info" ]; then
@@ -68,9 +75,8 @@ main() {
     fi
 
   else
-    # if no battery, look at CPU pressure
+    # CPU
     cpu_load=$(get_cpu_load)
-
     if (( $(echo "$cpu_load < 0.5" | bc -l) )); then
       mood="CPU load per core is ${cpu_load} — I'm lounging in digital hammocks."
     elif (( $(echo "$cpu_load < 1.0" | bc -l) )); then
@@ -81,10 +87,9 @@ main() {
       mood="CPU load ${cpu_load} — everything feels like a DDoS, and you're the attacker."
     fi
 
-    # check RAM usage if CPU is chill
+    # RAM if CPU calm
     if [ -z "$mood" ] || [[ "$mood" =~ "hammocks" || "$mood" =~ "complaints" ]]; then
       ram_usage=$(get_ram_usage)
-
       if (( $(echo "$ram_usage < 50" | bc -l) )); then
         mood="RAM usage ${ram_usage}% — brain spacious and calm."
       elif (( $(echo "$ram_usage < 80" | bc -l) )); then
@@ -94,10 +99,9 @@ main() {
       fi
     fi
 
-    # check disk usage if RAM looks okay
+    # Disk if RAM fine
     if [ -z "$mood" ] || [[ "$mood" =~ "calm" || "$mood" =~ "surviving" ]]; then
       disk_usage=$(get_disk_usage)
-
       if [ "$disk_usage" -lt 70 ]; then
         mood="Disk usage ${disk_usage}% — spacious, like an empty warehouse."
       elif [ "$disk_usage" -lt 90 ]; then
@@ -106,9 +110,18 @@ main() {
         mood="Disk usage ${disk_usage}% — I'm suffocating under your hoarding habits."
       fi
     fi
+
+    # Network if disk fine
+    if [ -z "$mood" ] || [[ "$mood" =~ "warehouse" || "$mood" =~ "downloads" ]]; then
+      net_status=$(get_network_status)
+      if [ "$net_status" = "online" ]; then
+        mood="Network is online — streams, memes, and dreams all reachable."
+      else
+        mood="Network is offline — welcome back to the Stone Age."
+      fi
+    fi
   fi
 
-  # print the chosen mood
   echo "$mood"
   echo ""
 }

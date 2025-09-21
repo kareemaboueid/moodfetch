@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.6]
+
+- Added network connectivity moods:
+- Network moods trigger when disk usage looks fine.
+
 ## [0.1.5]
 
 - Added disk usage moods:
