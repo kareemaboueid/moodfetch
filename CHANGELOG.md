@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.2.2]
+
+- Refactor: modularize project into `moodfetch`, `metrics.sh`, `mood_engine.sh`, `templates.sh`, and `utils.sh`.
+
 ## [0.2.1]
 
 - Added random witty fallback moods when all else is boring.

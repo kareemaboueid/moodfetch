@@ -3,124 +3,46 @@
 # shellcheck source=/dev/null
 # shellcheck disable=2009
 
-# helper: read battery percentage and charging status if available
-get_battery_status() {
-  local bat_path="/sys/class/power_supply/BAT0"
-  if [ -d "$bat_path" ]; then
-    local capacity=$(cat "$bat_path/capacity" 2>/dev/null)
-    local status=$(cat "$bat_path/status" 2>/dev/null)
-    echo "$capacity $status"
-  else
-    echo "" # no battery info available
+# Resolve script directory so we can source sibling files reliably
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source our modules (quietly). Each module guards its own functions.
+# These files are part of the project and expected to exist side-by-side.
+# If any is missing, we bail with a friendly message.
+for f in "utils.sh" "templates.sh" "metrics.sh" "mood_engine.sh"; do
+  if [ ! -f "${script_dir}/${f}" ]; then
+    echo "Missing dependency: ${f}. Please reinstall Moodfetch." >&2
+    exit 1
   fi
-}
-
-# helper: read cpu load per core (1-minute average normalized)
-get_cpu_load() {
-  local loadavg=$(awk '{print $1}' /proc/loadavg)
-  local cores=$(nproc 2>/dev/null || echo 1)
-  awk -v l="$loadavg" -v c="$cores" 'BEGIN { printf("%.2f", l/c) }'
-}
-
-# helper: read memory usage percentage
-get_ram_usage() {
-  local mem_total=$(grep MemTotal /proc/meminfo | awk '{print $2}')
-  local mem_available=$(grep MemAvailable /proc/meminfo | awk '{print $2}')
-  if [ -n "$mem_total" ] && [ -n "$mem_available" ]; then
-    awk -v t="$mem_total" -v a="$mem_available" 'BEGIN { printf("%.1f", (1 - (a/t)) * 100) }'
-  else
-    echo "0"
-  fi
-}
-
-# helper: read root filesystem usage percentage
-get_disk_usage() {
-  df -P / | awk 'NR==2 {print $5}' | sed 's/%//'
-}
-
-# helper: check if the system has internet access
-get_network_status() {
-  if ping -q -c 1 -W 1 1.1.1.1 >/dev/null 2>&1; then
-    echo "online"
-  else
-    echo "offline"
-  fi
-}
-
-# helper: get uptime in hours
-get_uptime_hours() {
-  awk '{printf("%.1f", $1/3600)}' /proc/uptime
-}
-
-# helper: get weather mood via ipinfo + wttr.in
-get_weather_mood() {
-  if command -v curl >/dev/null 2>&1; then
-    local location=$(curl -s ipinfo.io/city)
-    local condition=$(curl -s "wttr.in?format=%C" 2>/dev/null)
-    local temp=$(curl -s "wttr.in?format=%t" 2>/dev/null)
-    if [ -n "$location" ] && [ -n "$condition" ] && [ -n "$temp" ]; then
-      case "$condition" in
-        *Sunny*|*Clear*) echo "☀️ In $location, it's $condition $temp — my circuits are jealous." ;;
-        *Rain*|*Drizzle*) echo "🌧 In $location, it's $condition $temp — glad I’m indoors, unlike your socks." ;;
-        *Cloud*|*Overcast*) echo "☁️ In $location, it's $condition $temp — gray skies, gray processes." ;;
-        *) echo "🌡 In $location, it's $condition $temp — weather and systems both moody." ;;
-      esac
-    fi
-  fi
-}
-
-# helper: random witty fallback
-get_random_mood() {
-  local moods=(
-    "Existential crisis in progress…"
-    "Pretending to be busy while waiting for cron jobs."
-    "Dreaming of electric sheep, but stuck with your tabs."
-    "Running fine, but spiritually fragmented."
-    "Mood stable — unlike your Wi-Fi."
-  )
-  local count=${#moods[@]}
-  echo "${moods[$((RANDOM % count))]}"
-}
+  # shellcheck disable=SC1090
+  . "${script_dir}/${f}"
+done
 
 # --- MAIN ---
 main() {
+  # we keep it simple & friendly: clear, show logo, show heading, then the mood
   clear
 
-  # print ascii logo
-  cat "./logo/ascii-art.txt"
+  # print ascii logo if available; otherwise, no drama—just skip it
+  if [ -f "${script_dir}/ascii-art.txt" ]; then
+    cat "${script_dir}/ascii-art.txt"
+  fi
   echo ""
+  # Bold "Mood" header; if no ANSI, the raw text is still fine
   echo -e "\e[1mMood\e[0m"
   echo ""
 
-  # battery first
-  battery_info=$(get_battery_status)
+  # 1) Collect system metrics (best-effort & portable)
+  #    This fills a bunch of shell variables named: battery_pct, cpu_util_pct, etc.
+  collect_all_metrics
 
-  if [ -n "$battery_info" ]; then
-    battery_percentage=$(echo "$battery_info" | awk '{print $1}')
-    battery_state=$(echo "$battery_info" | awk '{print $2}')
+  # 2) Ask the engine to pick the most relevant mood.
+  #    The engine reads the exported variables from metrics + uses templates/placeholders.
+  local final_mood
+  final_mood="$(mood_engine_pick)"
 
-    if [ "$battery_state" = "Charging" ]; then
-      mood="Ah, finally plugged in. Feels like sipping espresso shots of electricity."
-    elif [ "$battery_percentage" -le 15 ]; then
-      mood="Running at ${battery_percentage}% — basically living on borrowed electrons."
-    elif [ "$battery_percentage" -le 40 ]; then
-      mood="Battery ${battery_percentage}% — alive but a bit hangry."
-    else
-      mood="Battery ${battery_percentage}% and holding steady. I can breathe easy."
-    fi
-  fi
-
-  # weather has higher priority than system metrics if available
-  if [ -z "$mood" ]; then
-    mood=$(get_weather_mood)
-  fi
-
-  # if still no mood, fallback witty
-  if [ -z "$mood" ]; then
-    mood=$(get_random_mood)
-  fi
-
-  echo "$mood"
+  # 3) Print the chosen mood text
+  echo "${final_mood}"
   echo ""
 }
 # ------
