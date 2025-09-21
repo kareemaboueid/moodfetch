@@ -3,15 +3,14 @@
 # shellcheck source=/dev/null
 # shellcheck disable=2009
 
-# Resolve script directory (source or installed)
-if [ -d "$(dirname -- "${BASH_SOURCE[0]}")/.." ]; then
-  script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-else
+# Resolve script directory:
+# - If installed via `make install`, prefer /usr/local/share/moodfetch
+# - Otherwise, fall back to local repo path
+if [ -d "/usr/local/share/moodfetch" ]; then
   script_dir="/usr/local/share/moodfetch"
+else
+  script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 fi
-
-# Resolve script directory so we can source sibling files reliably
-script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
 # Source our modules (quietly). Each module guards its own functions.
 # These files are part of the project and expected to exist side-by-side.
