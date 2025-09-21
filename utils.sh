@@ -18,18 +18,18 @@ run_quiet() {
 # Choose a random element from a bash array passed by name (not values).
 # usage: random_choice array_name
 random_choice() {
-  local __arr_name="$1"
-  # Indirect reference to array
-  # shellcheck disable=SC1087,SC2140
-  local __size
-  eval "__size=\${#__arr_name[@]}"
-  if [ -z "${__size}" ] || [ "${__size}" -eq 0 ]; then
+  local arr_name="$1"
+  # Count elements in array by name
+  local size
+  eval "size=\${#${arr_name}[@]}"
+  if [ -z "$size" ] || [ "$size" -eq 0 ]; then
     echo ""
     return
   fi
-  local __idx=$((RANDOM % __size))
-  # shellcheck disable=SC2295
-  eval "echo \${${__arr_name}[$__idx]}"
+  local idx=$((RANDOM % size))
+  local val
+  eval "val=\${${arr_name}[\$idx]}"
+  echo "$val"
 }
 
 # Replace placeholders in a template string with variables already in the environment.
