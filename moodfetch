@@ -16,6 +16,13 @@ get_battery_status() {
   fi
 }
 
+# helper: read cpu load per core (1-minute average normalized)
+get_cpu_load() {
+  local loadavg=$(awk '{print $1}' /proc/loadavg)
+  local cores=$(nproc 2>/dev/null || echo 1)
+  awk -v l="$loadavg" -v c="$cores" 'BEGIN { printf("%.2f", l/c) }'
+}
+
 # --- MAIN ---
 main() {
   # print ascii logo
@@ -24,7 +31,7 @@ main() {
   echo -e "\e[1mMood\e[0m"
   echo ""
 
-  # first, check if we have a battery and how it feels
+  # check battery first
   battery_info=$(get_battery_status)
 
   if [ -n "$battery_info" ]; then
@@ -43,15 +50,15 @@ main() {
     fi
 
   else
-    # fallback: use uptime mood when no battery present
-    uptime_hours=$(awk '{printf("%.1f", $1/3600)}' /proc/uptime)
+    # if no battery, look at CPU pressure
+    cpu_load=$(get_cpu_load)
 
-    if (( $(echo "$uptime_hours < 1" | bc -l) )); then
-      mood="Freshly booted, still smelling like a new car."
-    elif (( $(echo "$uptime_hours < 24" | bc -l) )); then
-      mood="Moderately awake. Let's not crash… yet."
+    if (( $(echo "$cpu_load < 0.5" | bc -l) )); then
+      mood="CPU load per core is ${cpu_load} — I'm lounging in digital hammocks."
+    elif (( $(echo "$cpu_load < 1.0" | bc -l) )); then
+      mood="CPU load ${cpu_load} — I'm working, but not filing complaints (yet)."
     else
-      mood="Been running for ${uptime_hours} hours. Basically a zombie server now."
+      mood="CPU load ${cpu_load} — everything feels like a DDoS, and you're the attacker."
     fi
   fi
 
