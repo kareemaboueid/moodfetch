@@ -5,11 +5,27 @@
 
 # --- MAIN ---
 main() {
+  # print ascii logo
   cat "./logo/ascii-art.txt"
   echo ""
-  echo "hello there, I am Moodfetch"
-  echo "A command-line tool for displaying your system's \"mood\""
+  echo -e "\e[1mMood\e[0m"
+  echo ""
 
+  # calculate uptime in hours
+  uptime_hours=$(awk '{printf("%.1f", $1/3600)}' /proc/uptime)
+
+  # sarcastic mood selection
+  if (( $(echo "$uptime_hours < 1" | bc -l) )); then
+    mood="Freshly booted, still smelling like a new car."
+  elif (( $(echo "$uptime_hours < 24" | bc -l) )); then
+    mood="Moderately awake. Let's not crash… yet."
+  else
+    mood="Been running for ${uptime_hours} hours. Basically a zombie server now."
+  fi
+
+  # print mood
+  echo "$mood"
+  echo ""
 }
 # ------
 
