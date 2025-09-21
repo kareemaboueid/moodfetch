@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.2.1]
+
+- Added random witty fallback moods when all else is boring.
+
 ## [0.2.0]
 
 - Added temperature moods.

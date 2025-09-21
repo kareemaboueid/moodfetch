@@ -52,45 +52,34 @@ get_uptime_hours() {
   awk '{printf("%.1f", $1/3600)}' /proc/uptime
 }
 
-# helper: get time-of-day mood
-get_time_of_day_mood() {
-  local hour=$(date +%H)
-  if [ "$hour" -lt 6 ]; then
-    echo "It's ${hour}:00 — what are you doing awake? The machine dreams of shutdowns."
-  elif [ "$hour" -lt 12 ]; then
-    echo "It's morning (${hour}:00) — booting brains and sipping imaginary coffee."
-  elif [ "$hour" -lt 18 ]; then
-    echo "It's afternoon (${hour}:00) — peak performance or peak procrastination."
-  else
-    echo "It's evening (${hour}:00) — tired circuits, but still pretending to work."
+# helper: get weather mood via ipinfo + wttr.in
+get_weather_mood() {
+  if command -v curl >/dev/null 2>&1; then
+    local location=$(curl -s ipinfo.io/city)
+    local condition=$(curl -s "wttr.in?format=%C" 2>/dev/null)
+    local temp=$(curl -s "wttr.in?format=%t" 2>/dev/null)
+    if [ -n "$location" ] && [ -n "$condition" ] && [ -n "$temp" ]; then
+      case "$condition" in
+        *Sunny*|*Clear*) echo "☀️ In $location, it's $condition $temp — my circuits are jealous." ;;
+        *Rain*|*Drizzle*) echo "🌧 In $location, it's $condition $temp — glad I’m indoors, unlike your socks." ;;
+        *Cloud*|*Overcast*) echo "☁️ In $location, it's $condition $temp — gray skies, gray processes." ;;
+        *) echo "🌡 In $location, it's $condition $temp — weather and systems both moody." ;;
+      esac
+    fi
   fi
 }
 
-# helper: get total process count
-get_process_count() {
-  ps -e --no-headers 2>/dev/null | wc -l
-}
-
-# helper: read thermal temperature (CPU sensor, °C)
-get_temperature() {
-  local temp_file=$(find /sys/class/thermal -type f -name "temp" 2>/dev/null | head -n1)
-  if [ -n "$temp_file" ]; then
-    local raw=$(cat "$temp_file" 2>/dev/null)
-    echo $((raw/1000)) # convert millidegree to Celsius
-  else
-    echo ""
-  fi
-}
-
-# helper: read audio volume (pactl or amixer)
-get_audio_volume() {
-  if command -v pactl >/dev/null 2>&1; then
-    pactl get-sink-volume @DEFAULT_SINK@ | awk '{print $5}' | tr -d '%' | head -n1
-  elif command -v amixer >/dev/null 2>&1; then
-    amixer get Master | grep -o "[0-9]*%" | head -n1 | tr -d '%'
-  else
-    echo ""
-  fi
+# helper: random witty fallback
+get_random_mood() {
+  local moods=(
+    "Existential crisis in progress…"
+    "Pretending to be busy while waiting for cron jobs."
+    "Dreaming of electric sheep, but stuck with your tabs."
+    "Running fine, but spiritually fragmented."
+    "Mood stable — unlike your Wi-Fi."
+  )
+  local count=${#moods[@]}
+  echo "${moods[$((RANDOM % count))]}"
 }
 
 # --- MAIN ---
@@ -119,93 +108,16 @@ main() {
     else
       mood="Battery ${battery_percentage}% and holding steady. I can breathe easy."
     fi
+  fi
 
-  else
-    # CPU
-    cpu_load=$(get_cpu_load)
-    if (( $(echo "$cpu_load < 0.5" | bc -l) )); then
-      mood="CPU load per core is ${cpu_load} — I'm lounging in digital hammocks."
-    elif (( $(echo "$cpu_load < 1.0" | bc -l) )); then
-      mood="CPU load ${cpu_load} — I'm working, but not filing complaints (yet)."
-    elif (( $(echo "$cpu_load < 2.0" | bc -l) )); then
-      mood="CPU load ${cpu_load} — I'm panting, but still alive."
-    else
-      mood="CPU load ${cpu_load} — everything feels like a DDoS, and you're the attacker."
-    fi
+  # weather has higher priority than system metrics if available
+  if [ -z "$mood" ]; then
+    mood=$(get_weather_mood)
+  fi
 
-    # RAM if CPU calm
-    if [ -z "$mood" ] || [[ "$mood" =~ "hammocks" || "$mood" =~ "complaints" ]]; then
-      ram_usage=$(get_ram_usage)
-      if (( $(echo "$ram_usage < 50" | bc -l) )); then
-        mood="RAM usage ${ram_usage}% — brain spacious and calm."
-      elif (( $(echo "$ram_usage < 80" | bc -l) )); then
-        mood="RAM usage ${ram_usage}% — brain cluttered with tabs, but surviving."
-      else
-        mood="RAM usage ${ram_usage}% — memory jam, paging out dreams."
-      fi
-    fi
-
-    # Disk if RAM fine
-    if [ -z "$mood" ] || [[ "$mood" =~ "calm" || "$mood" =~ "surviving" ]]; then
-      disk_usage=$(get_disk_usage)
-      if [ "$disk_usage" -lt 70 ]; then
-        mood="Disk usage ${disk_usage}% — spacious, like an empty warehouse."
-      elif [ "$disk_usage" -lt 90 ]; then
-        mood="Disk usage ${disk_usage}% — getting crowded with your questionable downloads."
-      else
-        mood="Disk usage ${disk_usage}% — I'm suffocating under your hoarding habits."
-      fi
-    fi
-
-    # Network if disk fine
-    if [ -z "$mood" ] || [[ "$mood" =~ "warehouse" || "$mood" =~ "downloads" ]]; then
-      net_status=$(get_network_status)
-      if [ "$net_status" = "online" ]; then
-        mood="Network is online — streams, memes, and dreams all reachable."
-      else
-        mood="Network is offline — welcome back to the Stone Age."
-      fi
-    fi
-
-    # Temperature if network fine
-    if [ -z "$mood" ] || [[ "$mood" =~ "reachable" || "$mood" =~ "Stone Age" ]]; then
-      temp=$(get_temperature)
-      if [ -n "$temp" ]; then
-        if [ "$temp" -lt 50 ]; then
-          mood="Temperature ${temp}°C — cool as a cucumber."
-        elif [ "$temp" -lt 75 ]; then
-          mood="Temperature ${temp}°C — sweating but manageable."
-        else
-          mood="Temperature ${temp}°C — thermal meltdown imminent, I need ice water!"
-        fi
-      fi
-    fi
-
-    # Audio volume if temp fine
-    if [ -z "$mood" ] || [[ "$mood" =~ "cucumber" || "$mood" =~ "manageable" || "$mood" =~ "meltdown" ]]; then
-      volume=$(get_audio_volume)
-      if [ -n "$volume" ]; then
-        if [ "$volume" -eq 0 ]; then
-          mood="Volume muted — silent treatment mode."
-        elif [ "$volume" -gt 70 ]; then
-          mood="Volume ${volume}% — eardrum demolition squad engaged."
-        else
-          mood="Volume ${volume}% — balanced, like a zen playlist."
-        fi
-      fi
-    fi
-
-    # Uptime fallback
-    if [ -z "$mood" ]; then
-      uptime_hours=$(get_uptime_hours)
-      if (( $(echo "$uptime_hours < 1" | bc -l) )); then
-        mood="Freshly booted, still smelling like a new car."
-      elif (( $(echo "$uptime_hours < 24" | bc -l) )); then
-        mood="Moderately awake. Let's not crash… yet."
-      else
-        mood="Been running for ${uptime_hours} hours. Basically a zombie server now."
-      fi
-    fi
+  # if still no mood, fallback witty
+  if [ -z "$mood" ]; then
+    mood=$(get_random_mood)
   fi
 
   echo "$mood"
