@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.0]
+
+- Added temperature moods.
+- Added audio/volume moods (works if `pactl` or `amixer` is installed)
+- Both new sensors act as late-stage fallbacks after network and disk checks.
+
 ## [0.1.9]
 
 - Added process count moods.

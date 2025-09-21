@@ -71,6 +71,28 @@ get_process_count() {
   ps -e --no-headers 2>/dev/null | wc -l
 }
 
+# helper: read thermal temperature (CPU sensor, °C)
+get_temperature() {
+  local temp_file=$(find /sys/class/thermal -type f -name "temp" 2>/dev/null | head -n1)
+  if [ -n "$temp_file" ]; then
+    local raw=$(cat "$temp_file" 2>/dev/null)
+    echo $((raw/1000)) # convert millidegree to Celsius
+  else
+    echo ""
+  fi
+}
+
+# helper: read audio volume (pactl or amixer)
+get_audio_volume() {
+  if command -v pactl >/dev/null 2>&1; then
+    pactl get-sink-volume @DEFAULT_SINK@ | awk '{print $5}' | tr -d '%' | head -n1
+  elif command -v amixer >/dev/null 2>&1; then
+    amixer get Master | grep -o "[0-9]*%" | head -n1 | tr -d '%'
+  else
+    echo ""
+  fi
+}
+
 # --- MAIN ---
 main() {
   clear
@@ -145,8 +167,36 @@ main() {
       fi
     fi
 
-    # Uptime fallback
+    # Temperature if network fine
     if [ -z "$mood" ] || [[ "$mood" =~ "reachable" || "$mood" =~ "Stone Age" ]]; then
+      temp=$(get_temperature)
+      if [ -n "$temp" ]; then
+        if [ "$temp" -lt 50 ]; then
+          mood="Temperature ${temp}°C — cool as a cucumber."
+        elif [ "$temp" -lt 75 ]; then
+          mood="Temperature ${temp}°C — sweating but manageable."
+        else
+          mood="Temperature ${temp}°C — thermal meltdown imminent, I need ice water!"
+        fi
+      fi
+    fi
+
+    # Audio volume if temp fine
+    if [ -z "$mood" ] || [[ "$mood" =~ "cucumber" || "$mood" =~ "manageable" || "$mood" =~ "meltdown" ]]; then
+      volume=$(get_audio_volume)
+      if [ -n "$volume" ]; then
+        if [ "$volume" -eq 0 ]; then
+          mood="Volume muted — silent treatment mode."
+        elif [ "$volume" -gt 70 ]; then
+          mood="Volume ${volume}% — eardrum demolition squad engaged."
+        else
+          mood="Volume ${volume}% — balanced, like a zen playlist."
+        fi
+      fi
+    fi
+
+    # Uptime fallback
+    if [ -z "$mood" ]; then
       uptime_hours=$(get_uptime_hours)
       if (( $(echo "$uptime_hours < 1" | bc -l) )); then
         mood="Freshly booted, still smelling like a new car."
@@ -154,23 +204,6 @@ main() {
         mood="Moderately awake. Let's not crash… yet."
       else
         mood="Been running for ${uptime_hours} hours. Basically a zombie server now."
-      fi
-    fi
-
-    # Time-of-day spice
-    if [ -z "$mood" ] || [[ "$mood" =~ "car" || "$mood" =~ "crash" || "$mood" =~ "zombie" ]]; then
-      mood=$(get_time_of_day_mood)
-    fi
-
-    # Process count as final fallback
-    if [ -z "$mood" ] || [[ "$mood" =~ "coffee" || "$mood" =~ "work" || "$mood" =~ "dreams" ]]; then
-      process_count=$(get_process_count)
-      if [ "$process_count" -lt 100 ]; then
-        mood="Only ${process_count} processes — it's lonely in here."
-      elif [ "$process_count" -lt 300 ]; then
-        mood="Running ${process_count} processes — a decent digital party."
-      else
-        mood="${process_count} processes?! This is less a system, more a circus."
       fi
     fi
   fi
