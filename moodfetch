@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# vim: noai:ts=4:sw=4:expandtab
+# shellcheck source=/dev/null
+# shellcheck disable=2009
+
+# --- MAIN ---
+main() {
+  cat "./logo/ascii-art.txt"
+  echo ""
+  echo "hello there, I am Moodfetch"
+  echo "A command-line tool for displaying your system's \"mood\""
+
+}
+# ------
+
+# Entry point
+main "$@"
