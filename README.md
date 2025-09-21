@@ -8,6 +8,15 @@
 
 Moodfetch displays your system's "mood" by fetching and presenting various system information in a visually appealing way. Your system definitely has something to say!
 
+## Requirements
+
+- bash
+- make (for installation via `make install`)  
+- Optional extras:
+  - `curl` → weather moods  
+  - `nmcli` → Wi-Fi signal strength  
+  - `pactl` / `amixer` → audio volume moods
+
 ## Install
 
 ```bash
@@ -35,14 +44,6 @@ moodfetch
 <p>
   <img src="https://raw.githubusercontent.com/kareemaboueid/moodfetch/refs/heads/main/moodfetch-screenshot1.png" alt="Moodfetch Screenshot" width="400"/>
 </p>
-
-## Requirements
-
-- bash (v4+)
-- Common GNU/Linux tools (`awk`, `sed`, `grep`, `df`, `ps`)
-- Optional extras: `curl`, `nmcli`, `pactl/amixer`, `powerprofilesctl`
-
-**Moodfetch** degrades gracefully if extras are missing.
 
 ## License
 
