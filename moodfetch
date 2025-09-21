@@ -47,6 +47,11 @@ get_network_status() {
   fi
 }
 
+# helper: get uptime in hours
+get_uptime_hours() {
+  awk '{printf("%.1f", $1/3600)}' /proc/uptime
+}
+
 # --- MAIN ---
 main() {
   clear
@@ -118,6 +123,18 @@ main() {
         mood="Network is online — streams, memes, and dreams all reachable."
       else
         mood="Network is offline — welcome back to the Stone Age."
+      fi
+    fi
+
+    # Uptime as final fallback
+    if [ -z "$mood" ] || [[ "$mood" =~ "reachable" || "$mood" =~ "Stone Age" ]]; then
+      uptime_hours=$(get_uptime_hours)
+      if (( $(echo "$uptime_hours < 1" | bc -l) )); then
+        mood="Freshly booted, still smelling like a new car."
+      elif (( $(echo "$uptime_hours < 24" | bc -l) )); then
+        mood="Moderately awake. Let's not crash… yet."
+      else
+        mood="Been running for ${uptime_hours} hours. Basically a zombie server now."
       fi
     fi
   fi

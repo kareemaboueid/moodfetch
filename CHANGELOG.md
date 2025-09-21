@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.7]
+
+- Re-introduced uptime moods as the final fallback:
+- Guarantees Moodfetch always prints something smart and expressive.
+
 ## [0.1.6]
 
 - Added network connectivity moods:
