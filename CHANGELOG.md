@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.9]
+
+- Added process count moods.
+
 ## [0.1.8]
 
 - Added time-of-day moods.

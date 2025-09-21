@@ -66,6 +66,11 @@ get_time_of_day_mood() {
   fi
 }
 
+# helper: get total process count
+get_process_count() {
+  ps -e --no-headers 2>/dev/null | wc -l
+}
+
 # --- MAIN ---
 main() {
   clear
@@ -152,9 +157,21 @@ main() {
       fi
     fi
 
-    # Time-of-day final spice
+    # Time-of-day spice
     if [ -z "$mood" ] || [[ "$mood" =~ "car" || "$mood" =~ "crash" || "$mood" =~ "zombie" ]]; then
       mood=$(get_time_of_day_mood)
+    fi
+
+    # Process count as final fallback
+    if [ -z "$mood" ] || [[ "$mood" =~ "coffee" || "$mood" =~ "work" || "$mood" =~ "dreams" ]]; then
+      process_count=$(get_process_count)
+      if [ "$process_count" -lt 100 ]; then
+        mood="Only ${process_count} processes — it's lonely in here."
+      elif [ "$process_count" -lt 300 ]; then
+        mood="Running ${process_count} processes — a decent digital party."
+      else
+        mood="${process_count} processes?! This is less a system, more a circus."
+      fi
     fi
   fi
 
