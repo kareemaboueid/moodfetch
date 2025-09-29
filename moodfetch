@@ -29,6 +29,13 @@ show_ascii=true
 verbose=false
 strip_metrics_placeholders=true   # default: hide numbers inside mood text
 
+# detect non-TTY → auto-disable colors
+if [ ! -t 1 ]; then
+  no_color=true
+else
+  no_color=false
+fi
+
 for arg in "$@"; do
   case "$arg" in
     --no-ascii)
@@ -41,7 +48,7 @@ for arg in "$@"; do
       shift
       ;;
     --version)
-      echo "Moodfetch version 0.2.12"
+      echo "Moodfetch version 0.2.16"
       exit 0
       ;;
     --help|-h)
@@ -67,12 +74,11 @@ main() {
     cat "${script_dir}/ascii-art.txt"
   fi
   echo ""
-
-  # Bold "Mood" header; if no ANSI or non-TTY, fall back to plain text
-  if [ -t 1 ]; then
-    echo -e "\e[1mMood\e[0m"
-  else
+  # Bold "Mood" header; if no ANSI, the raw text is still fine
+  if $no_color; then
     echo "Mood"
+  else
+    echo -e "\e[1mMood\e[0m"
   fi
   echo ""
 
