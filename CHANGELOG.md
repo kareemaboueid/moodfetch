@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.2.5]
+
+- Cleaned output: by default moods no longer show raw numbers.
+
 ## [0.2.4]
 
 - Added basic CLI flags:

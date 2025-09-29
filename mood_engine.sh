@@ -55,6 +55,13 @@ random_witty_fallback() {
   echo "${fallbacks[$((RANDOM % size))]}"
 }
 
+# ----- Clean placeholders if metrics flag is disabled -----
+strip_placeholders() {
+  local text="$1"
+  # sed: remove {placeholders}, then collapse multiple spaces to one
+  echo "$text" | sed -E 's/\{[a-zA-Z0-9_]+\}//g' | sed 's/  */ /g'
+}
+
 # Priority selection similar to your original design, but streamlined:
 # 1) Battery critical/low/charging
 # 2) CPU hot / pressure
@@ -137,7 +144,7 @@ mood_engine_pick() {
   # Pick a template line from the chosen array
   template="$(random_choice "${category}")"
 
-  # Fill placeholders from metrics
+  # Fill placeholders (numbers) always
   message="$(render_placeholders "${template}")"
 
   # If we landed on "default_ok", try to spice with weather; if weather fails, we’re still good.
@@ -151,6 +158,11 @@ mood_engine_pick() {
   # If for any reason message is empty, use witty fallback
   if [ -z "${message}" ]; then
     message="$(random_witty_fallback)"
+  fi
+
+  # Final step: strip placeholders if metrics flag is false
+  if ! $metrics; then
+    message="$(strip_placeholders "$message")"
   fi
 
   printf '%s' "${message}"
