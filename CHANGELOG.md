@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.10]
+
+- Improved Wi-Fi detection to avoid false positives on non-Wi-Fi systems.
+- Added graceful fallback when no interface or signal data available.
+
 ## [0.2.9]
 
 - Weather check now fast-fails if internet is offline, avoiding hangs when curl returns empty.

@@ -163,6 +163,13 @@ probe_network() {
   if has_cmd nmcli; then
     wifi_signal="$(nmcli -t -f ACTIVE,SIGNAL dev wifi | awk -F: '$1=="yes"{print $2; exit}')"
   fi
+
+  # Graceful fallback: if no wifi_signal and iface not Wi-Fi, clear it to avoid false positives
+  if [ -z "${wifi_signal}" ]; then
+    if ! printf '%s' "${iface}" | grep -qiE 'wl|wifi|wlan'; then
+      wifi_signal=""
+    fi
+  fi
 }
 
 # ----- Top process name (rough) -----
