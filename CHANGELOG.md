@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.2]
+
+- Removed unused `gpu_model` metric probe to simplify codebase.
+- Unified version number across CLI and CHANGELOG (now 0.3.2).
+- Improved help message with full options table + tip for syntax check.
+- Placeholders with empty values now default to "N/A" for clarity.
+
+## [0.3.1]
+
+- Removed unused `{gpu_model}` placeholder from templates and rendering logic.
+- Cleaned utils.sh keys list to match active placeholders only.
+
 ## [0.3.0]
 
 - Removed `clear` before printing output; mood now appears inline without screen wipe.
