@@ -41,7 +41,7 @@ for arg in "$@"; do
       shift
       ;;
     --version)
-      echo "Moodfetch version 0.2.8"
+      echo "Moodfetch version 0.2.12"
       exit 0
       ;;
     --help|-h)
@@ -67,8 +67,13 @@ main() {
     cat "${script_dir}/ascii-art.txt"
   fi
   echo ""
-  # Bold "Mood" header; if no ANSI, the raw text is still fine
-  echo -e "\e[1mMood\e[0m"
+
+  # Bold "Mood" header; if no ANSI or non-TTY, fall back to plain text
+  if [ -t 1 ]; then
+    echo -e "\e[1mMood\e[0m"
+  else
+    echo "Mood"
+  fi
   echo ""
 
   # 1) Collect system metrics (best-effort & portable)

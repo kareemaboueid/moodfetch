@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.12]
+
+- Auto-disable ANSI colors when output is not a TTY.
+- "Mood" header now prints in plain text when piped or redirected.
+
 ## [0.2.11]
 
 - Extended GPU model probe with multiple optional tools (`lspci`, `glxinfo`, `nvidia-smi`).
