@@ -61,24 +61,26 @@ probe_cpu() {
   fi
 
   # Quick utilization sample based on /proc/stat delta (lightweight)
-  # Two samples 100ms apart; not perfect, good enough for mood text
+  # NOTE: reduced sleep to 0.02s for faster response (instead of 0.10s).
   local a b idle_a idle_b total_a total_b totald idled
   a="$(grep '^cpu ' /proc/stat 2>/dev/null)"
-  sleep 0.10
+  # fast-exit if no data
+  [ -z "$a" ] && return
+  sleep 0.02
   b="$(grep '^cpu ' /proc/stat 2>/dev/null)"
-  if [ -n "$a" ] && [ -n "$b" ]; then
-    # shellcheck disable=SC2206
-    a=($a)
-    # shellcheck disable=SC2206
-    b=($b)
-    idle_a=$((a[4]+a[5])); idle_b=$((b[4]+b[5]))
-    total_a=0; for i in "${a[@]:1}"; do total_a=$((total_a+i)); done
-    total_b=0; for i in "${b[@]:1}"; do total_b=$((total_b+i)); done
-    totald=$((total_b-total_a))
-    idled=$((idle_b-idle_a))
-    if [ "${totald}" -gt 0 ]; then
-      cpu_util_pct="$(awk -v t="${totald}" -v i="${idled}" 'BEGIN{printf("%.0f",(1 - i/t)*100)}')"
-    fi
+  [ -z "$b" ] && return
+
+  # shellcheck disable=SC2206
+  a=($a)
+  # shellcheck disable=SC2206
+  b=($b)
+  idle_a=$((a[4]+a[5])); idle_b=$((b[4]+b[5]))
+  total_a=0; for i in "${a[@]:1}"; do total_a=$((total_a+i)); done
+  total_b=0; for i in "${b[@]:1}"; do total_b=$((total_b+i)); done
+  totald=$((total_b-total_a))
+  idled=$((idle_b-idle_a))
+  if [ "${totald}" -gt 0 ]; then
+    cpu_util_pct="$(awk -v t="${totald}" -v i="${idled}" 'BEGIN{printf("%.0f",(1 - i/t)*100)}')"
   fi
 }
 
@@ -119,21 +121,23 @@ probe_disk() {
 # ----- I/O wait (approx) -----
 probe_iowait() {
   # Use /proc/stat deltas similar to CPU util
+  # NOTE: reduced sleep to 0.02s for faster response (instead of 0.10s).
   local a b total_a total_b idle_a idle_b iow_a iow_b totald iowd
   a="$(grep '^cpu ' /proc/stat 2>/dev/null)"
-  sleep 0.10
+  [ -z "$a" ] && return
+  sleep 0.02
   b="$(grep '^cpu ' /proc/stat 2>/dev/null)"
-  if [ -n "$a" ] && [ -n "$b" ]; then
-    # shellcheck disable=SC2206
-    a=($a); b=($b)
-    iow_a="${a[5]}"; iow_b="${b[5]}"
-    total_a=0; for i in "${a[@]:1}"; do total_a=$((total_a+i)); done
-    total_b=0; for i in "${b[@]:1}"; do total_b=$((total_b+i)); done
-    totald=$((total_b-total_a))
-    iowd=$((iow_b-iow_a))
-    if [ "${totald}" -gt 0 ]; then
-      iowait_pct="$(awk -v t="${totald}" -v w="${iowd}" 'BEGIN{printf("%.0f",(w/t)*100)}')"
-    fi
+  [ -z "$b" ] && return
+
+  # shellcheck disable=SC2206
+  a=($a); b=($b)
+  iow_a="${a[5]}"; iow_b="${b[5]}"
+  total_a=0; for i in "${a[@]:1}"; do total_a=$((total_a+i)); done
+  total_b=0; for i in "${b[@]:1}"; do total_b=$((total_b+i)); done
+  totald=$((total_b-total_a))
+  iowd=$((iow_b-iow_a))
+  if [ "${totald}" -gt 0 ]; then
+    iowait_pct="$(awk -v t="${totald}" -v w="${iowd}" 'BEGIN{printf("%.0f",(w/t)*100)}')"
   fi
 }
 
