@@ -24,13 +24,38 @@ for f in "utils.sh" "templates.sh" "metrics.sh" "mood_engine.sh"; do
   . "${script_dir}/${f}"
 done
 
+# --- Parse flags (simple getopt-style) ---
+show_ascii=true
+metrics=false
+
+for arg in "$@"; do
+  case "$arg" in
+    --no-ascii)
+      show_ascii=false
+      shift
+      ;;
+    --metrics)
+      metrics=true
+      shift
+      ;;
+    --version)
+      echo "Moodfetch version 0.2.3"
+      exit 0
+      ;;
+    --help|-h)
+      echo "Usage: moodfetch [--no-ascii] [--metrics] [--version]"
+      exit 0
+      ;;
+  esac
+done
+
 # --- MAIN ---
 main() {
   # we keep it simple & friendly: clear, show logo, show heading, then the mood
   clear
 
   # print ascii logo if available; otherwise, no drama—just skip it
-  if [ -f "${script_dir}/ascii-art.txt" ]; then
+  if $show_ascii && [ -f "${script_dir}/ascii-art.txt" ]; then
     cat "${script_dir}/ascii-art.txt"
   fi
   echo ""
@@ -39,19 +64,31 @@ main() {
   echo ""
 
   # 1) Collect system metrics (best-effort & portable)
-  #    This fills a bunch of shell variables named: battery_pct, cpu_util_pct, etc.
   collect_all_metrics
 
   # 2) Ask the engine to pick the most relevant mood.
-  #    The engine reads the exported variables from metrics + uses templates/placeholders.
   local final_mood
   final_mood="$(mood_engine_pick)"
 
   # 3) Print the chosen mood text
   echo "${final_mood}"
   echo ""
-}
-# ------
 
+  # 4) If metrics, dump quick metrics summary (safe values only)
+  # still looking for ways to improve this
+  if $metrics; then
+    echo "---- metrics ----"
+    echo "CPU: ${cpu_util_pct:-?}%  Temp: ${cpu_temp:-?}°C"
+    echo "RAM: ${ram_pct:-?}%  SWAP: ${swap_pct:-?}%"
+    echo "Disk: ${disk_pct:-?}%  IOwait: ${iowait_pct:-?}%"
+    echo "Battery: ${battery_pct:-?}%"
+    echo "Uptime: ${uptime_h:-?}h"
+    echo "Wi-Fi: ${wifi_signal:-?}% on ${iface:-?}"
+    echo "Volume: ${volume_pct:-?}%"
+    echo "Profile: ${profile:-?}"
+  fi
+}
+
+# ------
 # Entry point
 main "$@"

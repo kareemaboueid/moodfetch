@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.4]
+
+- Added basic CLI flags:
+  - `--no-ascii` → skip ASCII art
+  - `--metrics` → print metrics summary after mood
+  - `--version` → show version
+
 ## [0.2.3]
 
 - Improved performance of CPU/I/O probes by reducing sleeps and adding fast exits.
