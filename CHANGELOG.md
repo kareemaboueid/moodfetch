@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.8]
+
+- Replaced `--metrics` flag with `--verbose` for clarity.
+- `--verbose` now shows metrics summary and keeps numbers inside mood text.
+
 ## [0.2.7]
 
 - Added automatic stripping of numeric metrics from mood text unless `--metrics` is specified.

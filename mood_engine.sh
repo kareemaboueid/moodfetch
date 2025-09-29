@@ -55,7 +55,7 @@ random_witty_fallback() {
   echo "${fallbacks[$((RANDOM % size))]}"
 }
 
-# ----- Clean placeholders if metrics flag is disabled -----
+# ----- Clean placeholders if verbose flag is disabled -----
 strip_placeholders() {
   local text="$1"
   # sed: remove {placeholders}, then collapse multiple spaces to one
@@ -160,8 +160,8 @@ mood_engine_pick() {
     message="$(random_witty_fallback)"
   fi
 
-  # Final step: strip placeholders if metrics flag is false
-  if ! $metrics; then
+  # Final step: strip placeholders if verbose flag is false
+  if ! $verbose; then
     message="$(strip_placeholders "$message")"
   fi
 

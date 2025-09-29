@@ -26,9 +26,8 @@ done
 
 # --- Parse flags (simple getopt-style) ---
 show_ascii=true
-metrics=false
-# I know this is gonna be probably be either painful or stupid!!!
-strip_metrics_placeholders=true   # default: hide numbers inside mood text (nerd overload not fun sometimes)
+verbose=false
+strip_metrics_placeholders=true   # default: hide numbers inside mood text
 
 for arg in "$@"; do
   case "$arg" in
@@ -36,21 +35,21 @@ for arg in "$@"; do
       show_ascii=false
       shift
       ;;
-    --metrics)
-      metrics=true
-      strip_metrics_placeholders=false   # if user asks for metrics, keep numbers in mood text (don’t strip)
+    --verbose)
+      verbose=true
+      strip_metrics_placeholders=false   # if user asks for verbose, keep numbers in mood text
       shift
       ;;
     --version)
-      echo "Moodfetch version 0.2.7"
+      echo "Moodfetch version 0.2.8"
       exit 0
       ;;
     --help|-h)
-      echo "Usage: moodfetch [--no-ascii] [--metrics] [--version] [--help]"
+      echo "Usage: moodfetch [--no-ascii] [--verbose] [--version] [--help]"
       echo ""
       echo "Options:"
       echo "  --no-ascii    Skip ASCII logo"
-      echo "  --metrics     Show metrics summary and keep numbers in mood text"
+      echo "  --verbose     Show metrics summary and keep numbers in mood text"
       echo "  --version     Show version and exit"
       echo "  --help, -h    Show this help and exit"
       exit 0
@@ -83,8 +82,8 @@ main() {
   echo "${final_mood}"
   echo ""
 
-  # 4) If metrics, dump quick metrics summary (safe values only)
-  if $metrics; then
+  # 4) If verbose, dump quick metrics summary (safe values only)
+  if $verbose; then
     echo "---- metrics ----"
     echo "CPU: ${cpu_util_pct:-?}%  Temp: ${cpu_temp:-?}°C"
     echo "RAM: ${ram_pct:-?}%  SWAP: ${swap_pct:-?}%"
