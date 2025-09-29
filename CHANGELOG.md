@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.15]
+
+- Made GPU probe more flexible.
+- Added fallbacks: `glxinfo` and `vainfo` if `lspci` is unavailable.
+- Gracefully leaves GPU field blank if no tools are present.
+
 ## [0.2.14]
 
 - Improved Wi-Fi detection fallback.

@@ -193,11 +193,25 @@ probe_power_profile() {
   fi
 }
 
-# ----- GPU model (very rough) -----
+# ----- GPU model (more flexible now) -----
 probe_gpu() {
-  if [ -x /usr/bin/lspci ]; then
-    gpu_model="$(/usr/bin/lspci 2>/dev/null | awk -F': ' '/ VGA | 3D /{print $3; exit}')"
+  # try lspci first
+  if has_cmd lspci; then
+    gpu_model="$(lspci 2>/dev/null | awk -F': ' '/ VGA | 3D /{print $3; exit}')"
   fi
+
+  # if still empty, try glxinfo
+  if [ -z "${gpu_model}" ] && has_cmd glxinfo; then
+    gpu_model="$(glxinfo 2>/dev/null | awk -F: '/Device:/{print $2; exit}' | sed 's/^ *//')"
+  fi
+
+  # fallback: vainfo (common on Intel/VAAPI setups)
+  if [ -z "${gpu_model}" ] && has_cmd vainfo; then
+    gpu_model="$(vainfo 2>/dev/null | awk -F: '/Driver version/{print $2; exit}' | sed 's/^ *//')"
+  fi
+
+  # if still empty, leave blank gracefully
+  gpu_model="${gpu_model:-}"
 }
 
 # Public: gather everything in one go
