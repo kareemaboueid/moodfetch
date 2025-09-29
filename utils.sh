@@ -45,7 +45,7 @@ render_placeholders() {
   local keys=(
     battery_pct cpu_temp cpu_util_pct load_per_core ram_pct swap_pct
     disk_pct uptime_h iface wifi_signal top_proc distro kernel hostname profile
-    iowait_pct volume_pct gpu_model
+    iowait_pct volume_pct
   )
   local out="${template}"
 
