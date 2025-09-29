@@ -20,7 +20,6 @@ kernel=""
 hostname=""
 profile=""
 volume_pct=""
-gpu_model=""
 
 # ----- OS / identity -----
 probe_os_identity() {
@@ -44,7 +43,6 @@ probe_battery() {
       if [ -r "${bat}/capacity" ]; then
         battery_pct="$(cat "${bat}/capacity" 2>/dev/null | tr -dc '0-9')"
       fi
-      # No need to export charging state for templates, engine reads raw files if needed
       break
     fi
   done
@@ -52,7 +50,6 @@ probe_battery() {
 
 # ----- CPU load & util -----
 probe_cpu() {
-  # 1-min load normalized by cores
   local la1 cores
   la1="$(awk '{print $1}' /proc/loadavg 2>/dev/null)"
   cores="$(nproc 2>/dev/null || echo 1)"
@@ -60,20 +57,14 @@ probe_cpu() {
     load_per_core="$(awk -v l="${la1}" -v c="${cores}" 'BEGIN{printf("%.2f",l/c)}')"
   fi
 
-  # Quick utilization sample based on /proc/stat delta (lightweight)
-  # NOTE: reduced sleep to 0.02s for faster response (instead of 0.10s).
   local a b idle_a idle_b total_a total_b totald idled
   a="$(grep '^cpu ' /proc/stat 2>/dev/null)"
-  # fast-exit if no data
   [ -z "$a" ] && return
   sleep 0.02
   b="$(grep '^cpu ' /proc/stat 2>/dev/null)"
   [ -z "$b" ] && return
 
-  # shellcheck disable=SC2206
-  a=($a)
-  # shellcheck disable=SC2206
-  b=($b)
+  a=($a); b=($b)
   idle_a=$((a[4]+a[5])); idle_b=$((b[4]+b[5]))
   total_a=0; for i in "${a[@]:1}"; do total_a=$((total_a+i)); done
   total_b=0; for i in "${b[@]:1}"; do total_b=$((total_b+i)); done
@@ -114,14 +105,11 @@ probe_memory() {
 
 # ----- Disk -----
 probe_disk() {
-  # Root filesystem usage percentage as integer
   disk_pct="$(df -P / 2>/dev/null | awk 'NR==2{gsub(/%/,"",$5); print $5}')"
 }
 
-# ----- I/O wait (approx) -----
+# ----- I/O wait -----
 probe_iowait() {
-  # Use /proc/stat deltas similar to CPU util
-  # NOTE: reduced sleep to 0.02s for faster response (instead of 0.10s).
   local a b total_a total_b idle_a idle_b iow_a iow_b totald iowd
   a="$(grep '^cpu ' /proc/stat 2>/dev/null)"
   [ -z "$a" ] && return
@@ -129,7 +117,6 @@ probe_iowait() {
   b="$(grep '^cpu ' /proc/stat 2>/dev/null)"
   [ -z "$b" ] && return
 
-  # shellcheck disable=SC2206
   a=($a); b=($b)
   iow_a="${a[5]}"; iow_b="${b[5]}"
   total_a=0; for i in "${a[@]:1}"; do total_a=$((total_a+i)); done
@@ -146,21 +133,12 @@ probe_uptime() {
   uptime_h="$(awk '{printf("%.0f",$1/3600)}' /proc/uptime 2>/dev/null)"
 }
 
-# ----- Network connectivity + iface type + wifi signal (best-effort) -----
+# ----- Network -----
 probe_network() {
-  # online/offline test
-  if has_cmd ping && ping -q -c 1 -W 1 1.1.1.1 >/dev/null 2>&1; then
-    :
-  else
-    :
-  fi
-  # get active interface guess (very rough without NetworkManager)
   iface="$(ip route 2>/dev/null | awk '/default/ {print $5; exit}')"
   if [ -z "${iface}" ]; then
     iface="$(ip -o link 2>/dev/null | awk -F': ' '{print $2}' | head -n1)"
   fi
-
-  # Wi-Fi signal via nmcli if available, but only if iface looks like Wi-Fi
   if has_cmd nmcli && printf '%s' "${iface}" | grep -qiE 'wl|wifi|wlan'; then
     wifi_signal="$(nmcli -t -f ACTIVE,SIGNAL dev wifi | awk -F: '$1=="yes"{print $2; exit}')"
   else
@@ -168,14 +146,14 @@ probe_network() {
   fi
 }
 
-# ----- Top process name (rough) -----
+# ----- Top process -----
 probe_top_process() {
   if has_cmd ps; then
     top_proc="$(ps -eo comm,%cpu,%mem --sort=-%cpu,-%mem 2>/dev/null | awk 'NR==2{print $1}')"
   fi
 }
 
-# ----- Audio volume (pactl/amixer) -----
+# ----- Audio -----
 probe_audio() {
   if has_cmd pactl; then
     volume_pct="$(pactl get-sink-volume @DEFAULT_SINK@ 2>/dev/null | awk '{print $5}' | tr -d '%' | head -n1)"
@@ -184,34 +162,13 @@ probe_audio() {
   fi
 }
 
-# ----- Power profile (optional) -----
+# ----- Power profile -----
 probe_power_profile() {
   if has_cmd powerprofilesctl; then
     profile="$(powerprofilesctl get 2>/dev/null)"
   else
     profile="balanced"
   fi
-}
-
-# ----- GPU model (more flexible now) -----
-probe_gpu() {
-  # try lspci first
-  if has_cmd lspci; then
-    gpu_model="$(lspci 2>/dev/null | awk -F': ' '/ VGA | 3D /{print $3; exit}')"
-  fi
-
-  # if still empty, try glxinfo
-  if [ -z "${gpu_model}" ] && has_cmd glxinfo; then
-    gpu_model="$(glxinfo 2>/dev/null | awk -F: '/Device:/{print $2; exit}' | sed 's/^ *//')"
-  fi
-
-  # fallback: vainfo (common on Intel/VAAPI setups)
-  if [ -z "${gpu_model}" ] && has_cmd vainfo; then
-    gpu_model="$(vainfo 2>/dev/null | awk -F: '/Driver version/{print $2; exit}' | sed 's/^ *//')"
-  fi
-
-  # if still empty, leave blank gracefully
-  gpu_model="${gpu_model:-}"
 }
 
 # Public: gather everything in one go
@@ -228,9 +185,7 @@ collect_all_metrics() {
   probe_top_process
   probe_audio
   probe_power_profile
-  probe_gpu
 
-  # Normalize a few to integers if needed
   cpu_util_pct="$(to_int_pct "${cpu_util_pct}")"
   ram_pct="$(to_int_pct "${ram_pct}")"
   swap_pct="$(to_int_pct "${swap_pct}")"

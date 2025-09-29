@@ -52,19 +52,21 @@ for arg in "$@"; do
       strip_metrics_placeholders=false   # if user asks for verbose, keep numbers in mood text
       shift
       ;;
-    --version)
-      echo "Moodfetch version 0.2.17"
+  --version)
+      echo "Moodfetch version 0.3.2"
       exit 0
       ;;
     --help|-h)
-      echo "Usage: moodfetch [--no-ascii] [--compact-ascii] [--verbose] [--version] [--help]"
+      echo "Usage: moodfetch [options]"
       echo ""
       echo "Options:"
-      echo "  --no-ascii       Skip ASCII logo"
-      echo "  --compact-ascii  Show smaller ASCII logo instead of full one"
-      echo "  --verbose        Show metrics summary and keep numbers in mood text"
-      echo "  --version        Show version and exit"
-      echo "  --help, -h       Show this help and exit"
+      echo "  --no-ascii        Skip ASCII logo"
+      echo "  --compact-ascii   Show smaller ASCII logo instead of full one"
+      echo "  --verbose         Show metrics summary and keep numbers in mood text"
+      echo "  --version         Show version and exit"
+      echo "  --help, -h        Show this help and exit"
+      echo ""
+      echo "Tip: You can run 'bash -n *.sh' inside the repo to validate syntax quickly."
       exit 0
       ;;
   esac
