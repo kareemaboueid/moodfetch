@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.3]
+
+- Improved performance of CPU/I/O probes by reducing sleeps and adding fast exits.
+- Weather moods now use curl with short timeouts (1.5s) and fail fast if unreachable.
+
 ## [0.2.2]
 
 - Refactor: modularize project into `moodfetch`, `metrics.sh`, `mood_engine.sh`, `templates.sh`, and `utils.sh`.

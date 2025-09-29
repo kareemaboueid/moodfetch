@@ -4,17 +4,23 @@
 
 # Weather: best-effort via ipinfo + wttr.in (kept here so it’s easy to disable if offline)
 get_weather_mood_line() {
+  # quick exit if curl not available
   if ! has_cmd curl; then
     return 1
   fi
+
+  # NOTE: Added --max-time 1.5s to avoid slow hangs, fail silently if too slow
   local city cond temp
-  city="$(curl -s --max-time 1 ipinfo.io/city)"
-  cond="$(curl -s --max-time 1 "https://wttr.in?format=%C" 2>/dev/null)"
-  temp="$(curl -s --max-time 1 "https://wttr.in?format=%t" 2>/dev/null)"
+  city="$(curl -s --max-time 1.5 ipinfo.io/city 2>/dev/null)"
+  cond="$(curl -s --max-time 1.5 "https://wttr.in?format=%C" 2>/dev/null)"
+  temp="$(curl -s --max-time 1.5 "https://wttr.in?format=%t" 2>/dev/null)"
+
   # Require at least condition; city/temp are nice-to-have
   if [ -z "${cond}" ]; then
+    # fast exit: don’t block mood if weather fails or it's gonna be slow as hell!
     return 1
   fi
+
   # Simplified categorization
   case "${cond}" in
     *Sunny*|*Clear* )
