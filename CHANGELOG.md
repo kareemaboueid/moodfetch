@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.3.0]
+
+- Removed `clear` before printing output; mood now appears inline without screen wipe.
+- Standardized missing metric values to `N/A` instead of `?`.
+- Faster weather fallback with sarcastic offline message.
+- Added `--compact-ascii` option to show smaller logo.
+- Removed unused placeholder `{gpu_model}` from templates.
+- Updated README with options table and contributing section.
+- Added `install.sh` as alternative to Makefile installation.
+
+## [0.2.16]
+
+- Auto-detect non-TTY environments and disable ANSI colors automatically.
+- Prevents ugly escape sequences when piping output to files or logs.
+
 ## [0.2.15]
 
 - Made GPU probe more flexible.

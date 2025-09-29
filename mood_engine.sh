@@ -19,7 +19,7 @@ get_weather_mood_line() {
   if [ -z "${cond}" ]; then
     # fast exit: don’t block mood if weather fails or it's gonna be slow as hell!
     # we return a sarcastic fallback line for offline cases
-    printf 'Weather API is unreachable — consider it stormy inside your router.'
+    printf 'Weather check skipped — assume gloomy skies and worse Wi-Fi.'
     return 0
   fi
 

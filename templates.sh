@@ -90,6 +90,6 @@ audio_muted_tpl=(
 
 default_ok_tpl=(
   "Everything's suspiciously fine on {distro} ({kernel}) — which statistically means chaos ETA one tab."
-  "System calm, {hostname} aligned, universe indifferent. Let's not ask ‘what could go wrong'."
+  "System calm, {hostname} aligned, universe indifferent. Let's not ask 'what could go wrong'."
   "Balanced profile {profile}, temps tame, network alive. Serenity makes me nervous."
 )

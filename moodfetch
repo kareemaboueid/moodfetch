@@ -26,6 +26,7 @@ done
 
 # --- Parse flags (simple getopt-style) ---
 show_ascii=true
+compact_ascii=false
 verbose=false
 strip_metrics_placeholders=true   # default: hide numbers inside mood text
 
@@ -42,23 +43,28 @@ for arg in "$@"; do
       show_ascii=false
       shift
       ;;
+    --compact-ascii)
+      compact_ascii=true
+      shift
+      ;;
     --verbose)
       verbose=true
       strip_metrics_placeholders=false   # if user asks for verbose, keep numbers in mood text
       shift
       ;;
     --version)
-      echo "Moodfetch version 0.2.16"
+      echo "Moodfetch version 0.2.17"
       exit 0
       ;;
     --help|-h)
-      echo "Usage: moodfetch [--no-ascii] [--verbose] [--version] [--help]"
+      echo "Usage: moodfetch [--no-ascii] [--compact-ascii] [--verbose] [--version] [--help]"
       echo ""
       echo "Options:"
-      echo "  --no-ascii    Skip ASCII logo"
-      echo "  --verbose     Show metrics summary and keep numbers in mood text"
-      echo "  --version     Show version and exit"
-      echo "  --help, -h    Show this help and exit"
+      echo "  --no-ascii       Skip ASCII logo"
+      echo "  --compact-ascii  Show smaller ASCII logo instead of full one"
+      echo "  --verbose        Show metrics summary and keep numbers in mood text"
+      echo "  --version        Show version and exit"
+      echo "  --help, -h       Show this help and exit"
       exit 0
       ;;
   esac
@@ -66,12 +72,13 @@ done
 
 # --- MAIN ---
 main() {
-  # we keep it simple & friendly: clear, show logo (unless disabled), then the mood
-  clear
-
-  # print ascii logo if available; otherwise, no drama—just skip it
-  if $show_ascii && [ -f "${script_dir}/ascii-art.txt" ]; then
-    cat "${script_dir}/ascii-art.txt"
+  # print ascii logo if available
+  if $show_ascii; then
+    if $compact_ascii && [ -f "${script_dir}/ascii-art-mini.txt" ]; then
+      cat "${script_dir}/ascii-art-mini.txt"
+    elif [ -f "${script_dir}/ascii-art.txt" ]; then
+      cat "${script_dir}/ascii-art.txt"
+    fi
   fi
   echo ""
   # Bold "Mood" header; if no ANSI, the raw text is still fine
@@ -96,14 +103,14 @@ main() {
   # 4) If verbose, dump quick metrics summary (safe values only)
   if $verbose; then
     echo "---- metrics ----"
-    echo "CPU: ${cpu_util_pct:-?}%  Temp: ${cpu_temp:-?}°C"
-    echo "RAM: ${ram_pct:-?}%  SWAP: ${swap_pct:-?}%"
-    echo "Disk: ${disk_pct:-?}%  IOwait: ${iowait_pct:-?}%"
-    echo "Battery: ${battery_pct:-?}%"
-    echo "Uptime: ${uptime_h:-?}h"
-    echo "Wi-Fi: ${wifi_signal:-?}% on ${iface:-?}"
-    echo "Volume: ${volume_pct:-?}%"
-    echo "Profile: ${profile:-?}"
+    echo "CPU: ${cpu_util_pct:-N/A}%  Temp: ${cpu_temp:-N/A}°C"
+    echo "RAM: ${ram_pct:-N/A}%  SWAP: ${swap_pct:-N/A}%"
+    echo "Disk: ${disk_pct:-N/A}%  IOwait: ${iowait_pct:-N/A}%"
+    echo "Battery: ${battery_pct:-N/A}%"
+    echo "Uptime: ${uptime_h:-N/A}h"
+    echo "Wi-Fi: ${wifi_signal:-N/A}% on ${iface:-N/A}"
+    echo "Volume: ${volume_pct:-N/A}%"
+    echo "Profile: ${profile:-N/A}"
   fi
 }
 
