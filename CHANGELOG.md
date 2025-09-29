@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.13]
+
+- Added faster offline weather fallback when curl returns empty or internet is down.
+- Weather now prints a default sarcastic line instead of stalling.
+
 ## [0.2.12]
 
 - Auto-disable ANSI colors when output is not a TTY.

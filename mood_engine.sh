@@ -18,12 +18,8 @@ get_weather_mood_line() {
   # Require at least condition; city/temp are nice-to-have
   if [ -z "${cond}" ]; then
     # fast exit: don’t block mood if weather fails or it's gonna be slow as hell!
-    return 1
-  fi
-
-  # Extra fast-fail: if internet is clearly down, fallback immediately
-  if ! ping -q -c 1 -W 1 1.1.1.1 >/dev/null 2>&1; then
-    echo "Weather unavailable — offline tranquility detected."
+    # we return a sarcastic fallback line for offline cases
+    printf 'Weather API is unreachable — consider it stormy inside your router.'
     return 0
   fi
 
