@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.6]
+
+- Added `--no-ascii` flag to disable ASCII art logo in output.
+- Updated help message to show available options.
+
 ## [0.2.5]
 
 - Cleaned output: by default moods no longer show raw numbers.

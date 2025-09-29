@@ -31,6 +31,7 @@ metrics=false
 for arg in "$@"; do
   case "$arg" in
     --no-ascii)
+      # user wants no ascii art at all
       show_ascii=false
       shift
       ;;
@@ -39,11 +40,17 @@ for arg in "$@"; do
       shift
       ;;
     --version)
-      echo "Moodfetch version 0.2.3"
+      echo "Moodfetch version 0.2.6"
       exit 0
       ;;
     --help|-h)
-      echo "Usage: moodfetch [--no-ascii] [--metrics] [--version]"
+      echo "Usage: moodfetch [--no-ascii] [--metrics] [--version] [--help]"
+      echo ""
+      echo "Options:"
+      echo "  --no-ascii    Skip ASCII logo"
+      echo "  --metrics     Show metrics summary after mood"
+      echo "  --version     Show version and exit"
+      echo "  --help, -h    Show this help and exit"
       exit 0
       ;;
   esac
@@ -51,7 +58,7 @@ done
 
 # --- MAIN ---
 main() {
-  # we keep it simple & friendly: clear, show logo, show heading, then the mood
+  # we keep it simple & friendly: clear, show logo (unless disabled), then the mood
   clear
 
   # print ascii logo if available; otherwise, no drama—just skip it
@@ -75,7 +82,6 @@ main() {
   echo ""
 
   # 4) If metrics, dump quick metrics summary (safe values only)
-  # still looking for ways to improve this
   if $metrics; then
     echo "---- metrics ----"
     echo "CPU: ${cpu_util_pct:-?}%  Temp: ${cpu_temp:-?}°C"
