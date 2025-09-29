@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.7]
+
+- Added automatic stripping of numeric metrics from mood text unless `--metrics` is specified.
+- Mood messages now stay sarcastic without exposing raw percentages by default.
+
 ## [0.2.6]
 
 - Added `--no-ascii` flag to disable ASCII art logo in output.

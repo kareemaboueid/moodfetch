@@ -64,6 +64,23 @@ render_placeholders() {
           ;;
       esac
     fi
+
+    # If user doesn’t want raw numbers in mood (strip mode), replace with generic terms
+    # (this is a bit hacky, but it works. or I just can’t think of a cleaner way right now)
+    if [ "${strip_metrics_placeholders:-true}" = true ]; then
+      case "${k}" in
+        battery_pct) val="low battery" ;;
+        cpu_temp) val="high heat" ;;
+        cpu_util_pct|load_per_core) val="heavy load" ;;
+        ram_pct|swap_pct) val="memory pressure" ;;
+        disk_pct) val="disk stress" ;;
+        uptime_h) val="long uptime" ;;
+        wifi_signal) val="weak signal" ;;
+        volume_pct) val="muted" ;;
+        iowait_pct) val="I/O lag" ;;
+      esac
+    fi
+
     # Escape forward slashes for sed
     local esc
     esc="$(printf '%s' "${val}" | sed 's/[&/\]/\\&/g')"

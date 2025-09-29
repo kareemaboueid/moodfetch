@@ -27,20 +27,22 @@ done
 # --- Parse flags (simple getopt-style) ---
 show_ascii=true
 metrics=false
+# I know this is gonna be probably be either painful or stupid!!!
+strip_metrics_placeholders=true   # default: hide numbers inside mood text (nerd overload not fun sometimes)
 
 for arg in "$@"; do
   case "$arg" in
     --no-ascii)
-      # user wants no ascii art at all
       show_ascii=false
       shift
       ;;
     --metrics)
       metrics=true
+      strip_metrics_placeholders=false   # if user asks for metrics, keep numbers in mood text (don’t strip)
       shift
       ;;
     --version)
-      echo "Moodfetch version 0.2.6"
+      echo "Moodfetch version 0.2.7"
       exit 0
       ;;
     --help|-h)
@@ -48,7 +50,7 @@ for arg in "$@"; do
       echo ""
       echo "Options:"
       echo "  --no-ascii    Skip ASCII logo"
-      echo "  --metrics     Show metrics summary after mood"
+      echo "  --metrics     Show metrics summary and keep numbers in mood text"
       echo "  --version     Show version and exit"
       echo "  --help, -h    Show this help and exit"
       exit 0
