@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.11]
+
+- Extended GPU model probe with multiple optional tools (`lspci`, `glxinfo`, `nvidia-smi`).
+- Added graceful fallback when none available.
+
 ## [0.2.10]
 
 - Improved Wi-Fi detection to avoid false positives on non-Wi-Fi systems.

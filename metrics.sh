@@ -197,10 +197,19 @@ probe_power_profile() {
   fi
 }
 
-# ----- GPU model (very rough) -----
+# ----- GPU model (very rough, multiple fallbacks) -----
 probe_gpu() {
-  if [ -x /usr/bin/lspci ]; then
-    gpu_model="$(/usr/bin/lspci 2>/dev/null | awk -F': ' '/ VGA | 3D /{print $3; exit}')"
+  # First try lspci (classic fallback)
+  if has_cmd lspci; then
+    gpu_model="$(lspci 2>/dev/null | awk -F': ' '/ VGA | 3D /{print $3; exit}')"
+  elif has_cmd glxinfo; then
+    # glxinfo can sometimes show the renderer string
+    gpu_model="$(glxinfo 2>/dev/null | awk -F': ' '/renderer string/{print $2; exit}')"
+  elif has_cmd nvidia-smi; then
+    # nvidia-smi -L prints GPU model if NVIDIA card present
+    gpu_model="$(nvidia-smi -L 2>/dev/null | head -n1 | cut -d':' -f2- | xargs)"
+  else
+    gpu_model=""
   fi
 }
 
