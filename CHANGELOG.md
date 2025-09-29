@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.14]
+
+- Improved Wi-Fi detection fallback.
+- Now avoids false positives on systems without Wi-Fi hardware.
+- `wifi_signal` stays empty if no Wi-Fi interfaces exist.
+
 ## [0.2.13]
 
 - Added faster offline weather fallback when curl returns empty or internet is down.

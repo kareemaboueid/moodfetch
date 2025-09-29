@@ -159,16 +159,12 @@ probe_network() {
   if [ -z "${iface}" ]; then
     iface="$(ip -o link 2>/dev/null | awk -F': ' '{print $2}' | head -n1)"
   fi
-  # Wi-Fi signal via nmcli if available
-  if has_cmd nmcli; then
-    wifi_signal="$(nmcli -t -f ACTIVE,SIGNAL dev wifi | awk -F: '$1=="yes"{print $2; exit}')"
-  fi
 
-  # Graceful fallback: if no wifi_signal and iface not Wi-Fi, clear it to avoid false positives
-  if [ -z "${wifi_signal}" ]; then
-    if ! printf '%s' "${iface}" | grep -qiE 'wl|wifi|wlan'; then
-      wifi_signal=""
-    fi
+  # Wi-Fi signal via nmcli if available, but only if iface looks like Wi-Fi
+  if has_cmd nmcli && printf '%s' "${iface}" | grep -qiE 'wl|wifi|wlan'; then
+    wifi_signal="$(nmcli -t -f ACTIVE,SIGNAL dev wifi | awk -F: '$1=="yes"{print $2; exit}')"
+  else
+    wifi_signal=""
   fi
 }
 
@@ -197,19 +193,10 @@ probe_power_profile() {
   fi
 }
 
-# ----- GPU model (very rough, multiple fallbacks) -----
+# ----- GPU model (very rough) -----
 probe_gpu() {
-  # First try lspci (classic fallback)
-  if has_cmd lspci; then
-    gpu_model="$(lspci 2>/dev/null | awk -F': ' '/ VGA | 3D /{print $3; exit}')"
-  elif has_cmd glxinfo; then
-    # glxinfo can sometimes show the renderer string
-    gpu_model="$(glxinfo 2>/dev/null | awk -F': ' '/renderer string/{print $2; exit}')"
-  elif has_cmd nvidia-smi; then
-    # nvidia-smi -L prints GPU model if NVIDIA card present
-    gpu_model="$(nvidia-smi -L 2>/dev/null | head -n1 | cut -d':' -f2- | xargs)"
-  else
-    gpu_model=""
+  if [ -x /usr/bin/lspci ]; then
+    gpu_model="$(/usr/bin/lspci 2>/dev/null | awk -F': ' '/ VGA | 3D /{print $3; exit}')"
   fi
 }
 
