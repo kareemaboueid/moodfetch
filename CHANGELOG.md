@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.9]
+
+- Weather check now fast-fails if internet is offline, avoiding hangs when curl returns empty.
+- Added offline fallback message for weather moods.
+
 ## [0.2.8]
 
 - Replaced `--metrics` flag with `--verbose` for clarity.

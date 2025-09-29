@@ -21,6 +21,12 @@ get_weather_mood_line() {
     return 1
   fi
 
+  # Extra fast-fail: if internet is clearly down, fallback immediately
+  if ! ping -q -c 1 -W 1 1.1.1.1 >/dev/null 2>&1; then
+    echo "Weather unavailable — offline tranquility detected."
+    return 0
+  fi
+
   # Simplified categorization
   case "${cond}" in
     *Sunny*|*Clear* )
