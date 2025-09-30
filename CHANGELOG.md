@@ -2,6 +2,13 @@
 
 ## [0.4.0]
 
+- Added robust error handling and logging system
+- Added --debug flag for troubleshooting
+- Added structured logging with timestamp and severity levels
+- Added try_cmd helper for safer command execution
+- Improved error messages with more context
+- Added color-coded log output (auto-disabled in non-TTY)
+
 - Added configuration system with support for both user (~/.config/moodfetch/config) and system-wide (/etc/moodfetch/config) settings
 - Added configurable thresholds for warnings (battery, CPU, RAM, disk)
 - Added example configuration file

@@ -67,6 +67,7 @@ CLI flags override config file settings.
 | `--no-ascii`     | Skip ASCII logo                              |
 | `--compact-ascii`| Show smaller ASCII logo instead of full one  |
 | `--verbose`      | Show metrics summary with numbers            |
+| `--debug`        | Enable debug logging for troubleshooting     |
 | `--version`      | Show version and exit                        |
 | `--help, -h`     | Show help                                    |
 

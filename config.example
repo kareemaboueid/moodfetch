@@ -1,6 +1,10 @@
 # Moodfetch configuration file
 # Copy this to ~/.config/moodfetch/config or /etc/moodfetch/config
 
+# Debug and logging options
+debug_enabled=false         # Enable debug logging (can be overridden with --debug)
+color_logging=true         # Use colors in log output (auto-disabled in non-TTY)
+
 # Display options
 show_ascii=true             # Show ASCII art logo
 compact_ascii=false         # Use compact ASCII art
