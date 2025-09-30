@@ -59,11 +59,21 @@ sudo make install
 
 ## Usage
 
-Just run:
+Basic usage:
 
 ```bash
-moodfetch
+moodfetch           # Display system mood
+moodfetch --version # Show version information
+moodfetch --check-update # Check for updates
 ```
+
+Available options:
+
+- `--version`: Display version information
+- `--check-update`: Check for available updates
+- `--no-ascii`: Hide ASCII art logo
+- `--compact-ascii`: Use compact ASCII art
+- `--verbose`: Show detailed metrics with numbers
 
 ## Configuration
 

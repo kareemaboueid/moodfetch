@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.4]
+
+- Added version management system
+  - Added version.sh module for version handling
+  - Implemented GitHub API-based update checking
+  - Added --version and --check-update flags
+  - Version comparison and parsing utilities
+- Enhanced documentation
+  - Added version management documentation
+  - Updated CLI flag documentation
+  - Added update checking instructions
+
 ## [0.4.3]
 
 - Added comprehensive theme system
