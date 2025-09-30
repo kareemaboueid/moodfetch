@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.4.8]
+
+- Reorganized project structure
+  - Created organized directory hierarchy
+  - Separated core and metrics modules
+  - Centralized configuration management
+  - Improved asset organization
+- Build system improvements
+  - Updated Makefile for new structure
+  - Improved installation process
+  - Better dependency handling
+  - Clearer installation messages
+- Documentation updates
+  - Added project structure documentation
+  - Improved installation instructions
+  - Updated configuration guide
+
 ## [0.4.7]
 
 - Simplified project structure

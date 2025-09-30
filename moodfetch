@@ -13,15 +13,34 @@ else
 fi
 
 # Source our modules (quietly). Each module guards its own functions.
-# These files are part of the project and expected to exist side-by-side.
-# If any is missing, we bail with a friendly message.
-for f in "utils.sh" "templates.sh" "metrics.sh" "mood_engine.sh" "config.sh" "logging.sh" "version.sh" "signals.sh"; do
-  if [ ! -f "${script_dir}/${f}" ]; then
-    echo "Missing dependency: ${f}. Please reinstall Moodfetch." >&2
+# Core modules
+for f in "utils.sh" "logging.sh" "version.sh" "signals.sh"; do
+  module_path="${script_dir}/core/${f}"
+  if [ ! -f "$module_path" ]; then
+    echo "Missing core module: ${f}. Please reinstall Moodfetch." >&2
     exit 1
   fi
   # shellcheck disable=SC1090
-  . "${script_dir}/${f}"
+  . "$module_path"
+done
+
+# Configuration module
+if [ ! -f "${script_dir}/config/config.sh" ]; then
+  echo "Missing configuration module. Please reinstall Moodfetch." >&2
+  exit 1
+fi
+# shellcheck disable=SC1090
+. "${script_dir}/config/config.sh"
+
+# Metrics and mood modules
+for f in "templates.sh" "metrics.sh" "mood_engine.sh" "os_detect.sh" "gpu_metrics.sh"; do
+  module_path="${script_dir}/metrics/${f}"
+  if [ ! -f "$module_path" ]; then
+    echo "Missing metrics module: ${f}. Please reinstall Moodfetch." >&2
+    exit 1
+  fi
+  # shellcheck disable=SC1090
+  . "$module_path"
 done
 
 # Initialize signal handlers early
