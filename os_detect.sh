@@ -1,23 +1,14 @@
 #!/usr/bin/env bash
-# OS detection and system interface discovery for moodfetch.
-# Identifies OS family and available system interfaces for metrics collection.
-
-# OS family identifiers
-OS_LINUX="linux"
-OS_MACOS="macos"
-OS_BSD="bsd"
-OS_UNKNOWN="unknown"
-
-# Current OS family (set during init)
-CURRENT_OS=""
+# Linux distribution detection and system interface discovery for moodfetch.
+# Identifies Linux distribution and available system interfaces for metrics collection.
 
 # System interface availability flags
-HAS_PROCFS=false      # Linux /proc filesystem
-HAS_SYSFS=false      # Linux /sys filesystem
-HAS_SYSCTL=false     # BSD/macOS sysctl
-HAS_KSTAT=false      # Solaris/illumos kstat
-HAS_IOREG=false      # macOS ioreg
-HAS_POWERMETRICS=false # macOS powermetrics (requires root)
+HAS_PROCFS=false      # /proc filesystem
+HAS_SYSFS=false      # /sys filesystem
+
+# Distribution information
+DISTRO_NAME=""       # e.g., "Ubuntu", "Fedora", etc.
+DISTRO_VERSION=""    # Distribution version
 
 # Initialize OS detection
 init_os_detect() {

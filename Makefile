@@ -1,10 +1,19 @@
+# Linux installation paths
 PREFIX ?= /usr/local
 BINDIR ?= $(PREFIX)/bin
 SHAREDIR ?= $(PREFIX)/share/moodfetch
 THEMEDIR ?= $(SHAREDIR)/themes
+CONFDIR ?= /etc/moodfetch
 SRCDIR := $(shell pwd)
 
-install:
+# Verify Linux environment
+check_linux:
+	@if [ "$$(uname -s)" != "Linux" ]; then \
+		echo "Error: This version only supports Linux"; \
+		exit 1; \
+	fi
+
+install: check_linux
 	@install -d "$(DESTDIR)$(BINDIR)"
 	@install -d "$(DESTDIR)$(SHAREDIR)"
 	@install -d "$(DESTDIR)$(THEMEDIR)"

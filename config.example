@@ -5,6 +5,10 @@
 debug_enabled=false         # Enable debug logging (can be overridden with --debug)
 color_logging=true         # Use colors in log output (auto-disabled in non-TTY)
 
+# Linux system paths
+procfs_path="/proc"        # Path to procfs mount
+sysfs_path="/sys"         # Path to sysfs mount
+
 # Display options
 show_ascii=true             # Show ASCII art logo
 compact_ascii=false         # Use compact ASCII art

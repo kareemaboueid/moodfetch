@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.4.6]
+
+- Refactored for Linux-only support
+  - Removed macOS and BSD support modules
+  - Streamlined OS detection for Linux distributions
+  - Optimized metrics collection for Linux interfaces
+  - Simplified installation process
+  - Updated documentation for Linux-only support
+- Performance improvements
+  - Direct access to Linux system interfaces
+  - Removed cross-platform compatibility overhead
+  - Faster metric collection using native Linux APIs
+
+## [0.4.5]
+
+- Added comprehensive signal handling
+  - Added signals.sh module for graceful process management
+  - Proper cleanup of temporary files and background processes
+  - Graceful handling of SIGINT, SIGTERM, and SIGHUP
+  - Improved error reporting on abnormal termination
+- Enhanced process management
+  - Automatic cleanup of background processes
+  - Improved temporary file handling
+  - Safer resource management
+
 ## [0.4.4]
 
 - Added version management system

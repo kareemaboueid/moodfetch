@@ -2,13 +2,12 @@
 # Collects system metrics in a best-effort, portable manner.
 # Exports variables that the mood engine and templates rely on.
 
-# Source platform detection and metrics modules
+# Source Linux metrics modules
 # shellcheck source=/dev/null
 . "${script_dir}/os_detect.sh"
 . "${script_dir}/gpu_metrics.sh"
-[ "$CURRENT_OS" = "$OS_MACOS" ] && . "${script_dir}/macos_metrics.sh"
 
-# Initialize OS detection
+# Initialize system detection
 init_os_detect
 
 # Defaults so renderers never crash even if a probe fails

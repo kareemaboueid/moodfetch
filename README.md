@@ -96,6 +96,20 @@ sudo cp /etc/moodfetch/config.example /etc/moodfetch/config
 Configuration options include display preferences, warning thresholds, and theme settings.
 CLI flags override config file settings.
 
+### Signal Handling
+
+Moodfetch handles system signals gracefully to ensure clean termination:
+
+- `SIGINT` (Ctrl+C): Gracefully stops execution
+- `SIGTERM`: Cleans up and exits normally
+- `SIGHUP`: Handles terminal disconnect properly
+
+Resources are automatically cleaned up on exit:
+
+- Temporary files are removed
+- Background processes are terminated
+- Active network connections are closed
+
 ### Themes
 
 Moodfetch supports different personality themes for system messages:
