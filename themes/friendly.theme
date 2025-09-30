@@ -1,0 +1,98 @@
+# Moodfetch friendly theme
+# A helpful, encouraging personality
+
+[battery_critical]
+Hey friend! We're down to {battery_pct}% battery - time to find that charger!
+{battery_pct}% battery left - let's get some power before we take a nap!
+Just a heads up: {battery_pct}% battery remaining. Charger time!
+Running low at {battery_pct}%! Would love to stay awake with you.
+
+[battery_low]
+Getting a bit sleepy at {battery_pct}% battery. Charger nearby?
+{battery_pct}% battery left - might want to think about plugging in soon!
+Still going at {battery_pct}%, but a power boost would be nice!
+Just looking out for you - we're at {battery_pct}% battery.
+
+[charging]
+Thanks for the power! Feeling energized already.
+Charging up nicely - ready for our next adventure!
+Power flowing in - thanks for keeping me going!
+Getting stronger by the second - appreciate the energy!
+
+[cpu_hot]
+Whew! Running a bit warm at {cpu_temp}°C. Mind if we take it easy?
+{cpu_temp}°C - we're working up quite a sweat here!
+Getting toasty at {cpu_temp}°C - maybe time for a breather?
+Things are heating up ({cpu_temp}°C)! Let's keep an eye on that.
+
+[cpu_pressure]
+Working hard at {cpu_util_pct}% - we make a great team!
+Quite busy at {cpu_util_pct}%! What exciting things are we creating?
+{cpu_util_pct}% CPU - we're really in the zone today!
+Putting in the effort at {cpu_util_pct}% - let me know if you need a break!
+
+[ram_full]
+Memory's getting cozy at {ram_pct}% - maybe close a few tabs?
+{ram_pct}% memory used - we're quite popular with the programs today!
+Getting a bit full up here ({ram_pct}%)! Mind if we clear some space?
+Memory at {ram_pct}% - lots of great work happening!
+
+[disk_full]
+{disk_pct}% disk space used - time for some spring cleaning?
+Getting a bit crowded at {disk_pct}% - want to free up some room?
+{disk_pct}% full - we've collected quite a few treasures!
+Disk space at {disk_pct}% - maybe we could organize a bit?
+
+[disk_iowait]
+Just catching up with all the file requests - bear with me!
+Lots of reading and writing happening - thanks for keeping me busy!
+Working through the file queue - almost there!
+Processing files as fast as I can - appreciate your patience!
+
+[uptime_zombie]
+{uptime_h} hours and still going strong! Though a refresh might be nice.
+We've been awake for {uptime_h} hours - maybe time for a quick restart?
+{uptime_h} hours of quality time together! How about a quick break?
+Been running for {uptime_h} hours - a restart would help me stay sharp!
+
+[net_offline]
+Looks like we lost our connection - want to check the network?
+Can't seem to reach the internet - everything okay out there?
+Network's taking a break - need help getting back online?
+Lost touch with the internet - let's see what's up!
+
+[wifi_weak]
+Signal's a bit shy at {wifi_signal}% - maybe we could move closer to the router?
+{wifi_signal}% Wi-Fi - not the strongest, but we're making it work!
+Signal could be better ({wifi_signal}%) - want to try a different spot?
+Wi-Fi's at {wifi_signal}% - we might find a better connection nearby!
+
+[gpu_hot]
+GPU's warming up to {gpu_temp}°C - those graphics are impressive!
+Running warm at {gpu_temp}°C - what amazing visuals are we creating?
+{gpu_temp}°C on the GPU - we're really bringing the pixels to life!
+Graphics card's getting toasty ({gpu_temp}°C) - must be something spectacular!
+
+[gpu_pressure]
+GPU working at {gpu_util_pct}% - putting on quite a show!
+{gpu_util_pct}% GPU power - those visuals must be breathtaking!
+Graphics at {gpu_util_pct}% - we're really creating something special!
+Giving it our all at {gpu_util_pct}% - loving the visual journey!
+
+[net_busy]
+Data flowing nicely at {net_rx_bps}B/s in, {net_tx_bps}B/s out!
+Busy sharing and receiving at full speed - great connections!
+Network's humming along - lots of exciting data flowing!
+Information highway is busy today - keeping up with all the action!
+
+[proc_high]
+{process_count} processes running - we're quite the multitasker!
+Managing {process_count} tasks - look at us being productive!
+Juggling {process_count} processes - we make it look easy!
+Busy with {process_count} tasks - what a productive day!
+
+[default_ok]
+Everything's running smoothly - ready for whatever you need!
+All systems happy and healthy - what shall we do today?
+Looking good and feeling great - ready to help!
+Everything's perfect - let's make something amazing!

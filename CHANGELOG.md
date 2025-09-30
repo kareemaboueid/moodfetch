@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.4.3]
+
+- Added comprehensive theme system
+  - New theme manager with support for custom themes
+  - Added professional and friendly built-in themes
+  - Theme cycling support with exclusion lists
+  - User and system-wide theme directories
+- Enhanced configuration
+  - Added theme-related configuration options
+  - Theme loading with fallback chain
+- Improved documentation
+  - Added theme creation guide
+  - Documented theme system architecture
+  - Added custom theme examples
+
 ## [0.4.2]
 
 - Added comprehensive cross-platform support

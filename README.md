@@ -86,6 +86,48 @@ sudo cp /etc/moodfetch/config.example /etc/moodfetch/config
 Configuration options include display preferences, warning thresholds, and theme settings.
 CLI flags override config file settings.
 
+### Themes
+
+Moodfetch supports different personality themes for system messages:
+
+- `sarcastic` (default) - Witty and humorous
+- `professional` - Formal and business-like
+- `friendly` - Helpful and encouraging
+
+To switch themes, edit your config file:
+
+```bash
+# In ~/.config/moodfetch/config:
+theme=professional  # Choose: sarcastic, professional, or friendly
+```
+
+#### Custom Themes
+
+You can create custom themes in `~/.config/moodfetch/themes/`:
+
+1. Create a new `.theme` file
+2. Define sections with `[section_name]`
+3. Add message templates (one per line)
+
+Example custom theme:
+
+```bash
+# ~/.config/moodfetch/themes/mytheme.theme
+
+[battery_critical]
+Battery at {battery_pct}% - custom message here!
+Another message template here...
+
+[cpu_hot]
+CPU temp {cpu_temp}°C - your message here...
+```
+
+Theme locations (in order of precedence):
+
+1. `~/.config/moodfetch/themes/` (user themes)
+2. `/etc/moodfetch/themes/` (system-wide themes)
+3. Built-in themes
+
 ## Options
 
 | Flag             | Description                                  |

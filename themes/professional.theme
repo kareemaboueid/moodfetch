@@ -1,0 +1,98 @@
+# Moodfetch professional theme
+# A more serious, business-oriented personality
+
+[battery_critical]
+Critical: Battery at {battery_pct}%. Immediate action required.
+Warning: System shutdown imminent. Battery at {battery_pct}%. Connect power supply.
+Battery critically low ({battery_pct}%). Please connect power source immediately.
+Urgent: Battery level {battery_pct}%. System requires power connection.
+
+[battery_low]
+Notice: Battery at {battery_pct}%. Consider connecting power supply.
+Advisory: Low battery condition ({battery_pct}%). Power connection recommended.
+Battery level suboptimal ({battery_pct}%). Power connection advised.
+System running on battery power ({battery_pct}%). Monitor power levels.
+
+[charging]
+Power connected. Battery charging normally.
+System connected to external power. Battery charging.
+Power supply detected. Charging battery to optimal levels.
+External power source connected. Battery charging initiated.
+
+[cpu_hot]
+Warning: CPU temperature {cpu_temp}°C exceeds normal operating range.
+Notice: High CPU thermal reading {cpu_temp}°C. Monitoring system load.
+CPU temperature elevated to {cpu_temp}°C. Verify cooling systems.
+Temperature warning: CPU at {cpu_temp}°C. Check system cooling.
+
+[cpu_pressure]
+System under high load ({cpu_util_pct}%). Resource monitoring advised.
+Elevated CPU utilization detected ({cpu_util_pct}%). Performance impact possible.
+High system load detected. CPU utilization: {cpu_util_pct}%.
+Processing load elevated ({cpu_util_pct}%). System performance may be affected.
+
+[ram_full]
+Memory usage critical ({ram_pct}%). Consider closing unused applications.
+High memory utilization detected ({ram_pct}%). System performance may be impacted.
+Available memory low. Current usage: {ram_pct}%. Action recommended.
+Memory pressure detected: {ram_pct}% utilized. Monitor system performance.
+
+[disk_full]
+Storage capacity critical ({disk_pct}%). Data management required.
+Disk space warning: {disk_pct}% utilized. Review storage allocation.
+Storage optimization recommended. Current usage: {disk_pct}%.
+Limited storage remaining ({disk_pct}% used). Consider cleanup operations.
+
+[disk_iowait]
+I/O wait time elevated. System performance may be affected.
+Storage subsystem experiencing high load. Monitor performance metrics.
+Disk I/O pressure detected. Performance impact possible.
+Storage access delays detected. System responsiveness may be impacted.
+
+[uptime_zombie]
+System uptime: {uptime_h} hours. Consider planned maintenance window.
+Extended uptime detected ({uptime_h} hours). System maintenance advised.
+Uptime threshold exceeded ({uptime_h} hours). Review maintenance schedule.
+System running {uptime_h} hours. Evaluate maintenance requirements.
+
+[net_offline]
+Network connectivity lost. Verify network configuration.
+Network interface offline. Check connection status.
+Network access unavailable. Diagnostics recommended.
+Connectivity issue detected. Network status: offline.
+
+[wifi_weak]
+Wireless signal strength suboptimal ({wifi_signal}%). Review positioning.
+Wi-Fi signal degraded ({wifi_signal}%). Connection stability may be affected.
+Wireless network performance reduced ({wifi_signal}%). Check signal strength.
+Wi-Fi signal strength: {wifi_signal}%. Consider network optimization.
+
+[gpu_hot]
+GPU temperature warning: {gpu_temp}°C. Monitor system cooling.
+Graphics subsystem temperature elevated to {gpu_temp}°C.
+GPU thermal threshold approached: {gpu_temp}°C. Review cooling performance.
+High GPU temperature detected: {gpu_temp}°C. Verify cooling operation.
+
+[gpu_pressure]
+GPU utilization high ({gpu_util_pct}%). Performance impact possible.
+Graphics processing load elevated: {gpu_util_pct}%.
+High GPU activity detected ({gpu_util_pct}%). Monitor system performance.
+GPU resources under pressure: {gpu_util_pct}% utilization.
+
+[net_busy]
+Network traffic elevated: {net_rx_bps}B/s incoming, {net_tx_bps}B/s outgoing.
+High network utilization detected. Monitoring bandwidth usage.
+Network activity spike detected. Traffic analysis recommended.
+Bandwidth utilization increased. Monitor network performance.
+
+[proc_high]
+Process count elevated ({process_count}). Review system load.
+High number of active processes: {process_count}. Monitor system resources.
+Process threshold exceeded: {process_count} active. Performance impact possible.
+System load increased: {process_count} active processes.
+
+[default_ok]
+System operating within normal parameters.
+All monitored metrics within acceptable ranges.
+System status nominal. No immediate action required.
+Normal operation confirmed. System health satisfactory.

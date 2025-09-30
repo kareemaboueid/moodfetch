@@ -15,7 +15,7 @@ fi
 # Source our modules (quietly). Each module guards its own functions.
 # These files are part of the project and expected to exist side-by-side.
 # If any is missing, we bail with a friendly message.
-for f in "utils.sh" "templates.sh" "metrics.sh" "mood_engine.sh" "config.sh" "logging.sh"; do
+for f in "utils.sh" "templates.sh" "metrics.sh" "mood_engine.sh" "config.sh" "logging.sh" "themes.sh"; do
   if [ ! -f "${script_dir}/${f}" ]; then
     echo "Missing dependency: ${f}. Please reinstall Moodfetch." >&2
     exit 1
