@@ -4,19 +4,13 @@
 
 # Default configuration values
 CONFIG_DEFAULTS=(
-  "show_ascii=true"                   # Show ASCII art logo
-  "compact_ascii=false"               # Use compact ASCII art
-  "verbose=false"                     # Show detailed metrics
-  "hide_metrics=true"                 # Hide raw numbers in mood text
   "weather_timeout=1.5"              # Weather API timeout in seconds
-  "color_enabled=true"               # Use colors in output
   "battery_critical=15"              # Battery critical threshold (%)
   "battery_low=30"                   # Battery low threshold (%)
   "cpu_hot=80"                       # CPU temperature warning (°C)
   "cpu_high_load=75"                 # CPU utilization warning (%)
   "ram_high=85"                      # RAM usage warning (%)
   "disk_high=90"                     # Disk usage warning (%)
-  # No theme configuration needed - using classic sarcastic personality
 )
 
 # Paths for configuration files (in order of precedence)

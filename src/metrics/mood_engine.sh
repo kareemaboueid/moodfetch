@@ -138,13 +138,6 @@ mood_engine_pick() {
     category="uptime_zombie_tpl"
   fi
 
-  # GPU stress check
-  if [ -z "${category}" ] && [ -n "${gpu_temp}" ] && [ "${gpu_temp}" -gt "${CONFIG_GPU_HOT:-75}" ]; then
-    category="gpu_hot_tpl"
-  elif [ -z "${category}" ] && [ -n "${gpu_util_pct}" ] && [ "${gpu_util_pct}" -gt "${CONFIG_GPU_HIGH_LOAD:-85}" ]; then
-    category="gpu_pressure_tpl"
-  fi
-
   # Network stress check (if significant bandwidth usage)
   if [ -z "${category}" ] && [ -n "${net_rx_bps}" ] && [ -n "${net_tx_bps}" ]; then
     rx_mb="$((net_rx_bps / 1000000))"  # Convert to MB/s

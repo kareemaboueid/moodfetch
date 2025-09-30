@@ -35,9 +35,6 @@ install: check_linux
 	# Install metrics modules
 	@install -m 0644 "$(METRICSDIR)"/*.sh "$(DESTDIR)$(SHAREDIR)/metrics/"
 	
-	# Install assets
-	@install -m 0644 "$(ASSETSDIR)/ascii-art.txt" "$(DESTDIR)$(SHAREDIR)/"
-	
 	# Install configuration
 	@install -m 0644 "$(CONFIGDIR)/config.example" "$(DESTDIR)$(CONFDIR)/config.example"
 	

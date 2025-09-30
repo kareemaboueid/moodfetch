@@ -1,12 +1,10 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/kareemaboueid/moodfetch/refs/heads/main/logo/moodfetch.png" alt="Moodfetch Logo" width="300"/>
-</p>
+# moodfetch
 
-<h1 align="center" dir="auto">moodfetch</h1>
+![Moodfetch Logo](https://raw.githubusercontent.com/kareemaboueid/moodfetch/refs/heads/main/logo/moodfetch.png)
 
-<p align="center" dir="auto">A command-line tool for displaying your system's "mood"</p>
+A command-line tool for displaying your system's "mood"
 
-Moodfetch displays your system's "mood" by fetching and presenting various system information in a visually appealing way. Your system definitely has something to say!
+Moodfetch displays your system's "mood" by fetching and presenting various system information.
 
 ## Requirements
 
@@ -24,9 +22,6 @@ Moodfetch displays your system's "mood" by fetching and presenting various syste
   - `curl` → weather moods
   - `nmcli` → Wi-Fi signal strength
   - `pactl` / `amixer` → audio volume moods
-  - `nvidia-smi` → NVIDIA GPU metrics
-  - `intel_gpu_top` → Intel GPU metrics
-  - `radeontop` → AMD GPU metrics
 
 #### macOS
 
@@ -71,9 +66,6 @@ Available options:
 
 - `--version`: Display version information
 - `--check-update`: Check for available updates
-- `--no-ascii`: Hide ASCII art logo
-- `--compact-ascii`: Use compact ASCII art
-- `--verbose`: Show detailed metrics with numbers
 
 ## Configuration
 
@@ -82,19 +74,7 @@ Moodfetch can be configured using either:
 - System-wide config: `/etc/moodfetch/config`
 - User config: `~/.config/moodfetch/config`
 
-Copy the example config file to get started:
-
-```bash
-# For current user only:
-mkdir -p ~/.config/moodfetch/
-cp /etc/moodfetch/config.example ~/.config/moodfetch/config
-
-# Or system-wide:
-sudo cp /etc/moodfetch/config.example /etc/moodfetch/config
-```
-
-Configuration options include display preferences, warning thresholds, and theme settings.
-CLI flags override config file settings.
+The configuration file contains system warning thresholds and performance settings.
 
 ### Signal Handling
 
@@ -109,23 +89,6 @@ Resources are automatically cleaned up on exit:
 - Temporary files are removed
 - Background processes are terminated
 - Active network connections are closed
-
-### Themes
-
-Moodfetch supports different personality themes for system messages:
-
-- `sarcastic` (default) - Witty and humorous
-- `professional` - Formal and business-like
-- `friendly` - Helpful and encouraging
-
-To switch themes, edit your config file:
-
-```bash
-# In ~/.config/moodfetch/config:
-theme=professional  # Choose: sarcastic, professional, or friendly
-```
-
-#### Custom Themes
 
 You can create custom themes in `~/.config/moodfetch/themes/`:
 
@@ -156,8 +119,6 @@ Theme locations (in order of precedence):
 
 | Flag             | Description                                  |
 |------------------|----------------------------------------------|
-| `--no-ascii`     | Skip ASCII logo                              |
-| `--compact-ascii`| Show smaller ASCII logo instead of full one  |
 | `--verbose`      | Show metrics summary with numbers            |
 | `--debug`        | Enable debug logging for troubleshooting     |
 | `--version`      | Show version and exit                        |
@@ -171,9 +132,7 @@ For major changes, please open an issue first to discuss what you’d like to ch
 
 ### Example
 
-<p>
-  <img src="https://raw.githubusercontent.com/kareemaboueid/moodfetch/refs/heads/main/moodfetch-screenshot1.png" alt="Moodfetch Screenshot" width="400"/>
-</p>
+![Moodfetch Screenshot](https://raw.githubusercontent.com/kareemaboueid/moodfetch/refs/heads/main/moodfetch-screenshot1.png)
 
 ## License
 

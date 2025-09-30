@@ -33,7 +33,7 @@ fi
 . "${script_dir}/config/config.sh"
 
 # Metrics and mood modules
-for f in "templates.sh" "metrics.sh" "mood_engine.sh" "os_detect.sh" "gpu_metrics.sh"; do
+for f in "templates.sh" "metrics.sh" "mood_engine.sh" "os_detect.sh"; do
   module_path="${script_dir}/metrics/${f}"
   if [ ! -f "$module_path" ]; then
     echo "Missing metrics module: ${f}. Please reinstall Moodfetch." >&2
@@ -50,35 +50,10 @@ init_signal_handlers
 init_config
 
 # --- Parse flags (simple getopt-style) ---
-# CLI flags override config file settings
-show_ascii="$(get_config CONFIG_SHOW_ASCII true)"
-compact_ascii="$(get_config CONFIG_COMPACT_ASCII false)"
-verbose="$(get_config CONFIG_VERBOSE false)"
-strip_metrics_placeholders="$(get_config CONFIG_HIDE_METRICS true)"   # default: hide numbers inside mood text
-
-# detect non-TTY → auto-disable colors
-if [ ! -t 1 ]; then
-  no_color=true
-else
-  no_color=false
-fi
-
+# Parse command line arguments
 for arg in "$@"; do
   case "$arg" in
-    --no-ascii)
-      show_ascii=false
-      shift
-      ;;
-    --compact-ascii)
-      compact_ascii=true
-      shift
-      ;;
-    --verbose)
-      verbose=true
-      strip_metrics_placeholders=false   # if user asks for verbose, keep numbers in mood text
-      shift
-      ;;
-  --version)
+    --version)
       print_version
       exit 0
       ;;
@@ -95,9 +70,6 @@ for arg in "$@"; do
       echo "Usage: moodfetch [options]"
       echo ""
       echo "Options:"
-      echo "  --no-ascii        Skip ASCII logo"
-      echo "  --compact-ascii   Show smaller ASCII logo instead of full one"
-      echo "  --verbose         Show metrics summary and keep numbers in mood text"
       echo "  --debug           Enable debug logging"
       echo "  --version         Show version and exit"
       echo "  --help, -h        Show this help and exit"
@@ -110,15 +82,6 @@ done
 
 # --- MAIN ---
 main() {
-  # print ascii logo if available
-  if $show_ascii; then
-    if $compact_ascii && [ -f "${script_dir}/ascii-art-mini.txt" ]; then
-      cat "${script_dir}/ascii-art-mini.txt"
-    elif [ -f "${script_dir}/ascii-art.txt" ]; then
-      cat "${script_dir}/ascii-art.txt"
-    fi
-  fi
-  echo ""
   # Bold "Mood" header; if no ANSI, the raw text is still fine
   if $no_color; then
     echo "Mood"
@@ -134,22 +97,8 @@ main() {
   local final_mood
   final_mood="$(mood_engine_pick)"
 
-  # 3) Print the chosen mood text
+  # Print the mood
   echo "${final_mood}"
-  echo ""
-
-  # 4) If verbose, dump quick metrics summary (safe values only)
-  if $verbose; then
-    echo "---- metrics ----"
-    echo "CPU: ${cpu_util_pct:-N/A}%  Temp: ${cpu_temp:-N/A}°C"
-    echo "RAM: ${ram_pct:-N/A}%  SWAP: ${swap_pct:-N/A}%"
-    echo "Disk: ${disk_pct:-N/A}%  IOwait: ${iowait_pct:-N/A}%"
-    echo "Battery: ${battery_pct:-N/A}%"
-    echo "Uptime: ${uptime_h:-N/A}h"
-    echo "Wi-Fi: ${wifi_signal:-N/A}% on ${iface:-N/A}"
-    echo "Volume: ${volume_pct:-N/A}%"
-    echo "Profile: ${profile:-N/A}"
-  fi
 }
 
 # ------

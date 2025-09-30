@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Sarcastic templates. Placeholders: {battery_pct} {cpu_temp} {cpu_util_pct} {ram_pct} {swap_pct}
+# Mood templates. Placeholders: {battery_pct} {cpu_temp} {cpu_util_pct} {ram_pct} {swap_pct}
 # {disk_pct} {uptime_h} {iface} {wifi_signal} {top_proc} {distro} {kernel} {hostname} {profile} {iowait_pct}
-# {gpu_temp} {gpu_util_pct} {gpu_mem_pct} {net_rx_bps} {net_tx_bps} {process_count} {disk_read_bps} {disk_write_bps}
+# {net_rx_bps} {net_tx_bps} {process_count} {disk_read_bps} {disk_write_bps}
 set -u
 
 battery_critical_tpl=(

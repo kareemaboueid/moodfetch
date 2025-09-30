@@ -5,7 +5,6 @@
 # Source Linux metrics modules
 # shellcheck source=/dev/null
 . "${script_dir}/os_detect.sh"
-. "${script_dir}/gpu_metrics.sh"
 
 # Initialize system detection
 init_os_detect
@@ -29,10 +28,7 @@ hostname=""
 profile=""
 volume_pct=""
 
-# New metrics
-gpu_temp=""         # GPU temperature in °C
-gpu_util_pct=""     # GPU utilization percentage
-gpu_mem_pct=""      # GPU memory usage percentage
+# Bandwidth metrics
 net_rx_bps=""       # Network receive bandwidth in bytes/sec
 net_tx_bps=""       # Network transmit bandwidth in bytes/sec
 process_count=""    # Total running processes
