@@ -21,7 +21,7 @@ fi
 
 # Source our modules (quietly). Each module guards its own functions.
 # Core modules
-for f in "utils.sh" "logging.sh" "signals.sh" "update_notifier.sh"; do
+for f in "utils.sh" "logging.sh" "signals.sh"; do
   module_path="${script_dir}/core/${f}"
   if [ ! -f "$module_path" ]; then
     echo "Missing core module: ${f}. Please reinstall Moodfetch." >&2
@@ -64,6 +64,66 @@ init_config
 
 # Initialize OS detection now that all utilities are loaded
 init_os_detect
+
+# --- Update checking functions (only works in git repositories) ---
+check_for_updates() {
+    # Only check if we're in a git repository - graceful skip otherwise
+    if [ ! -d ".git" ]; then
+        log_debug "Not in a git repository, skipping update check"
+        return 0
+    fi
+    
+    # Get current local commit hash
+    local local_commit
+    if ! local_commit=$(git rev-parse HEAD 2>/dev/null) || [ -z "${local_commit}" ]; then
+        log_debug "Could not determine local commit, skipping update check"
+        return 0
+    fi
+    
+    local remote_commit
+    
+    # Try git ls-remote first (faster and more reliable)
+    if has_cmd git && remote_commit=$(timeout 1.5s git ls-remote origin main 2>/dev/null | cut -f1); then
+        log_debug "Got remote commit via git ls-remote: ${remote_commit:0:8}"
+    elif has_cmd curl && remote_commit=$(timeout 1.5s curl -s --max-time 1.5 "https://api.github.com/repos/kareemaboueid/moodfetch/commits/main" 2>/dev/null | grep -o '"sha": *"[^"]*"' | head -1 | cut -d'"' -f4); then
+        log_debug "Got remote commit via GitHub API: ${remote_commit:0:8}"
+    else
+        log_debug "Could not check for updates (network timeout or unavailable)"
+        return 0
+    fi
+    
+    # Compare commits
+    if [ -n "${remote_commit}" ] && [ "${local_commit}" != "${remote_commit}" ]; then
+        # Check if we're actually behind (not just different)
+        if git merge-base --is-ancestor "${local_commit}" "${remote_commit}" 2>/dev/null; then
+            show_update_notification
+        else
+            log_debug "Local commit differs but may not be behind remote"
+        fi
+    else
+        log_debug "Repository is up-to-date"
+    fi
+}
+
+# Show the update notification
+show_update_notification() {
+    echo ""
+    echo "[!] A new update of moodfetch is available."
+    echo "To update, run:"
+    
+    # Determine the current repository path
+    local repo_path
+    repo_path=$(pwd)
+    
+    # Check if globally installed to suggest appropriate update method
+    if command -v moodfetch >/dev/null 2>&1 && [ "$(command -v moodfetch)" != "${repo_path}/moodfetch" ]; then
+        echo "cd ${repo_path} && git pull && sudo make install"
+    else
+        echo "cd ${repo_path} && git pull"
+    fi
+}
+
+# Initialize OS detection now that all utilities are loaded
 
 # --- Parse flags (simple getopt-style) ---
 # Parse command line arguments
@@ -113,7 +173,7 @@ main() {
   # Use carriage return + ANSI clear line for clean output across terminals
   printf "\r\e[K%s\n" "${final_mood}"
   
-  # Check for updates (non-blocking, fast timeout)
+  # Check for updates (only if in a git repository, non-blocking)
   check_for_updates
 }
 

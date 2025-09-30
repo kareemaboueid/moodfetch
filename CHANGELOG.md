@@ -10,11 +10,14 @@
   - Clarified that global installation requires proper installers
 
 - **Added lightweight update notifier**
+  - Fully decoupled from installation method
+  - Only works in git repositories (graceful skip in other environments)
+  - Update checking logic built into main script (no separate module)
+  - Installation scripts remain git-agnostic for pure file copying
   - Non-blocking update checks using git ls-remote or GitHub API fallback
   - Fast 1.5s timeout to avoid delays in mood generation
   - Shows friendly notification when updates are available
   - Provides exact update commands with current repository path
-  - Only notifies - never auto-updates or modifies repository
 
 - **Removed version support completely**
   - Deleted --version and --check-update CLI flags

@@ -15,7 +15,7 @@ mkdir -p "$BINDIR" "$SHAREDIR/core" "$SHAREDIR/metrics" "$SHAREDIR/config"
 install -m 0755 "$SRCDIR/moodfetch" "$BINDIR/moodfetch"
 
 # Install core modules
-for module in utils.sh logging.sh signals.sh update_notifier.sh; do
+for module in utils.sh logging.sh signals.sh; do
     if [ -f "$SRCDIR/src/core/$module" ]; then
         install -m 0644 "$SRCDIR/src/core/$module" "$SHAREDIR/core/"
     else

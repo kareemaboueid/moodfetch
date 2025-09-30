@@ -86,6 +86,8 @@ cd moodfetch
 git pull
 ```
 
+> **Note:** Update notifications only appear when running moodfetch from a git repository. If you installed via `make install` without the git repository, updates must be checked manually.
+
 ### Global Installation
 
 ```bash
