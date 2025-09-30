@@ -2,6 +2,13 @@
 
 ## Latest
 
+- **Added lightweight update notifier**
+  - Non-blocking update checks using git ls-remote or GitHub API fallback
+  - Fast 1.5s timeout to avoid delays in mood generation
+  - Shows friendly notification when updates are available
+  - Provides exact update commands with current repository path
+  - Only notifies - never auto-updates or modifies repository
+
 - **Removed version support completely**
   - Deleted --version and --check-update CLI flags
   - Removed version.sh module and all version tracking

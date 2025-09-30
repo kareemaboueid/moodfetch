@@ -21,7 +21,7 @@ fi
 
 # Source our modules (quietly). Each module guards its own functions.
 # Core modules
-for f in "utils.sh" "logging.sh" "signals.sh"; do
+for f in "utils.sh" "logging.sh" "signals.sh" "update_notifier.sh"; do
   module_path="${script_dir}/core/${f}"
   if [ ! -f "$module_path" ]; then
     echo "Missing core module: ${f}. Please reinstall Moodfetch." >&2
@@ -112,6 +112,9 @@ main() {
   # Clear the placeholder and print the real mood
   # Use carriage return + ANSI clear line for clean output across terminals
   printf "\r\e[K%s\n" "${final_mood}"
+  
+  # Check for updates (non-blocking, fast timeout)
+  check_for_updates
 }
 
 # ------
