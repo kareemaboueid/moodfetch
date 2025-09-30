@@ -10,12 +10,38 @@ Moodfetch displays your system's "mood" by fetching and presenting various syste
 
 ## Requirements
 
-- bash
-- make (for installation via `make install`)  
-- Optional extras:
-  - `curl` → weather moods  
-  - `nmcli` → Wi-Fi signal strength  
+### Core Requirements
+
+- bash 4.0+
+- make (for installation via `make install`)
+
+### Platform-Specific Requirements
+
+#### Linux
+
+- procfs and sysfs mounted (standard on most distributions)
+- Optional:
+  - `curl` → weather moods
+  - `nmcli` → Wi-Fi signal strength
   - `pactl` / `amixer` → audio volume moods
+  - `nvidia-smi` → NVIDIA GPU metrics
+  - `intel_gpu_top` → Intel GPU metrics
+  - `radeontop` → AMD GPU metrics
+
+#### macOS
+
+- Xcode Command Line Tools (for basic compilation tools)
+- Optional:
+  - `smckit` → CPU temperature monitoring
+  - Root access → detailed CPU/GPU metrics via powermetrics
+  - `osascript` → volume control monitoring
+
+#### BSD Systems
+
+- Base system with sysctl support
+- Optional:
+  - procfs mounted → enhanced CPU/memory metrics
+  - `curl` → weather moods
 
 ## Install
 

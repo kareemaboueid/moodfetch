@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.4.2]
+
+- Added comprehensive cross-platform support
+  - New OS detection module with platform-specific capabilities
+  - Native macOS support using ioreg, sysctl, and powermetrics
+  - Initial BSD support with sysctl and procfs integration
+  - Modular metric collection based on available system interfaces
+- Updated installation process
+  - Platform-aware module installation
+  - Improved dependency handling
+- Enhanced documentation
+  - Platform-specific requirements and features
+  - Cross-platform compatibility notes
+  - Updated installation instructions
+
 ## [0.4.1]
 
 - Added comprehensive GPU metrics collection with multi-vendor support

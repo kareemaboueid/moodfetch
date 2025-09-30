@@ -2,9 +2,14 @@
 # Collects system metrics in a best-effort, portable manner.
 # Exports variables that the mood engine and templates rely on.
 
-# Source GPU metrics module
+# Source platform detection and metrics modules
 # shellcheck source=/dev/null
+. "${script_dir}/os_detect.sh"
 . "${script_dir}/gpu_metrics.sh"
+[ "$CURRENT_OS" = "$OS_MACOS" ] && . "${script_dir}/macos_metrics.sh"
+
+# Initialize OS detection
+init_os_detect
 
 # Defaults so renderers never crash even if a probe fails
 battery_pct=""
@@ -244,34 +249,80 @@ probe_disk_io() {
 
 # Public: gather everything in one go
 collect_all_metrics() {
-  log_debug "Starting metrics collection"
+  log_debug "Starting metrics collection on $CURRENT_OS"
   
-  # Run the faster probes first
-  probe_os_identity &
-  probe_process_count &
-  probe_power_profile &
-  
-  # Run medium-speed probes
-  probe_battery
-  probe_cpu
-  probe_cpu_temp
-  probe_memory
-  probe_disk
-  probe_uptime
-  probe_audio
-  
-  # Run the GPU probes (might be slow with some drivers)
-  discover_gpu_tools
-  gpu_temp="$(probe_gpu_temp)"
-  gpu_util_pct="$(probe_gpu_util)"
-  gpu_mem_pct="$(probe_gpu_memory)"
-  
-  # Run I/O probes (these need to measure over time)
-  probe_iowait
-  probe_network_bandwidth
-  probe_disk_io
-  probe_network
-  probe_top_process
+  case "$CURRENT_OS" in
+    "$OS_MACOS")
+      # macOS-specific probes
+      probe_os_identity &
+      probe_macos_processes &
+      
+      probe_macos_battery
+      probe_macos_cpu
+      probe_macos_memory
+      probe_macos_disk
+      
+      # GPU probes if available
+      discover_gpu_tools
+      gpu_temp="$(probe_gpu_temp)"
+      gpu_util_pct="$(probe_gpu_util)"
+      gpu_mem_pct="$(probe_gpu_memory)"
+      
+      # I/O probes
+      probe_macos_disk_io
+      probe_macos_network
+      probe_macos_wifi
+      probe_macos_volume
+      ;;
+      
+    "$OS_LINUX")
+      # Linux-specific probes
+      probe_os_identity &
+      probe_process_count &
+      probe_power_profile &
+      
+      probe_battery
+      probe_cpu
+      probe_cpu_temp
+      probe_memory
+      probe_disk
+      probe_uptime
+      probe_audio
+      
+      discover_gpu_tools
+      gpu_temp="$(probe_gpu_temp)"
+      gpu_util_pct="$(probe_gpu_util)"
+      gpu_mem_pct="$(probe_gpu_memory)"
+      
+      probe_iowait
+      probe_network_bandwidth
+      probe_disk_io
+      probe_network
+      probe_top_process
+      ;;
+      
+    "$OS_BSD")
+      # BSD probes (fallback to sysctl where possible)
+      probe_os_identity
+      
+      if has_procfs; then
+        probe_process_count &
+        probe_cpu
+        probe_memory
+      fi
+      
+      if has_sysctl; then
+        # Use sysctl for basic metrics
+        load_per_core="$(read_sysctl "vm.loadavg" | awk '{print $2}')"
+        ram_pct="$(read_sysctl "vm.stats.vm.v_active_count" "")"
+      fi
+      ;;
+      
+    *)
+      log_warn "Unsupported OS: $CURRENT_OS"
+      probe_os_identity
+      ;;
+  esac
   
   # Wait for background probes
   wait
