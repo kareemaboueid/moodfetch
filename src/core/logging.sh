@@ -52,10 +52,10 @@ _log() {
 
   # Build the prefix with timestamp and level
   case "${level}" in
-    ${LOG_ERROR}) prefix="$(_log_prefix "ERROR")" ;;
-    ${LOG_WARN})  prefix="$(_log_prefix "WARN")" ;;
-    ${LOG_INFO})  prefix="$(_log_prefix "INFO")" ;;
-    ${LOG_DEBUG}) prefix="$(_log_prefix "DEBUG")" ;;
+    "${LOG_ERROR}") prefix="$(_log_prefix "ERROR")" ;;
+    "${LOG_WARN}")  prefix="$(_log_prefix "WARN")" ;;
+    "${LOG_INFO}")  prefix="$(_log_prefix "INFO")" ;;
+    "${LOG_DEBUG}") prefix="$(_log_prefix "DEBUG")" ;;
     *) prefix="$(_log_prefix "?????")" ;;
   esac
 

@@ -14,9 +14,6 @@ CURRENT_OS="$OS_UNKNOWN"
 # System interface availability flags
 HAS_PROCFS=false      # /proc filesystem
 HAS_SYSFS=false       # /sys filesystem
-HAS_SYSCTL=false      # sysctl interface
-HAS_IOREG=false       # macOS ioreg (unused on Linux)
-HAS_POWERMETRICS=false # macOS powermetrics (unused on Linux)
 
 # Distribution information
 DISTRO_NAME=""       # e.g., "Ubuntu", "Fedora", etc.
@@ -87,12 +84,6 @@ detect_linux_interfaces() {
         log_debug "Found Linux sysfs"
     else
         log_warn "sysfs not available or not readable"
-    fi
-    
-    # Check for sysctl (some Linux systems have it)
-    if has_cmd "sysctl"; then
-        HAS_SYSCTL=true
-        log_debug "Found sysctl on Linux"
     fi
 }
 

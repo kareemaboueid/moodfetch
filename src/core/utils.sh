@@ -22,6 +22,7 @@ random_choice() {
     echo ""
     return
   fi
+  # shellcheck disable=SC2034  # Used in eval below
   local idx=$((RANDOM % size))
   local val
   eval "val=\${${arr_name}[\$idx]}"
@@ -36,7 +37,7 @@ render_placeholders() {
   local keys=(
     battery_pct cpu_temp cpu_util_pct load_per_core ram_pct swap_pct
     disk_pct uptime_h iface wifi_signal top_proc distro kernel hostname profile
-    iowait_pct volume_pct
+    iowait_pct volume_pct net_rx_bps net_tx_bps process_count disk_read_bps disk_write_bps
   )
   local out="${template}"
 

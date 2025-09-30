@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Collects system metrics in a best-effort, portable manner.
 # Exports variables that the mood engine and templates rely on.
+# shellcheck disable=SC2034  # Variables exported for mood engine
 
 # Defaults so renderers never crash even if a probe fails
 battery_pct=""
@@ -30,13 +31,17 @@ disk_write_bps=""   # Disk write bandwidth in bytes/sec
 
 # ----- OS / identity -----
 probe_os_identity() {
+  # shellcheck disable=SC2034  # Exported for mood engine
   hostname="$(hostname 2>/dev/null || echo "localhost")"
+  # shellcheck disable=SC2034  # Exported for mood engine
   kernel="$(uname -r 2>/dev/null || echo "unknown-kernel")"
   if [ -r /etc/os-release ]; then
     # shellcheck disable=SC1091
     . /etc/os-release
+    # shellcheck disable=SC2034  # Exported for mood engine
     distro="${PRETTY_NAME:-$NAME $VERSION}"
   else
+    # shellcheck disable=SC2034  # Exported for mood engine
     distro="$(uname -s 2>/dev/null || echo "unknown-OS")"
   fi
 }
@@ -56,6 +61,7 @@ probe_battery() {
 }
 
 # ----- CPU load & util -----
+# ----- CPU load, utilization, and I/O wait (consolidated) -----
 probe_cpu() {
   local la1 cores
   la1="$(awk '{print $1}' /proc/loadavg 2>/dev/null)"
@@ -64,21 +70,30 @@ probe_cpu() {
     load_per_core="$(awk -v l="${la1}" -v c="${cores}" 'BEGIN{printf("%.2f",l/c)}')"
   fi
 
-  local a b idle_a idle_b total_a total_b totald idled
+  # Get CPU stats twice with small delay to calculate utilization and I/O wait
+  local a b idle_a idle_b total_a total_b totald idled iow_a iow_b iowd
   a="$(grep '^cpu ' /proc/stat 2>/dev/null)"
   [ -z "$a" ] && return
   sleep 0.01
   b="$(grep '^cpu ' /proc/stat 2>/dev/null)"
   [ -z "$b" ] && return
 
-  a=($a); b=($b)
+  read -ra a <<< "$a"; read -ra b <<< "$b"
+  
+  # Calculate CPU utilization
   idle_a=$((a[4]+a[5])); idle_b=$((b[4]+b[5]))
   total_a=0; for i in "${a[@]:1}"; do total_a=$((total_a+i)); done
   total_b=0; for i in "${b[@]:1}"; do total_b=$((total_b+i)); done
   totald=$((total_b-total_a))
   idled=$((idle_b-idle_a))
+  
   if [ "${totald}" -gt 0 ]; then
     cpu_util_pct="$(awk -v t="${totald}" -v i="${idled}" 'BEGIN{printf("%.0f",(1 - i/t)*100)}')"
+    
+    # Calculate I/O wait percentage using same data
+    iow_a="${a[5]}"; iow_b="${b[5]}"
+    iowd=$((iow_b-iow_a))
+    iowait_pct="$(awk -v t="${totald}" -v w="${iowd}" 'BEGIN{printf("%.0f",(w/t)*100)}')"
   fi
 }
 
@@ -113,26 +128,6 @@ probe_memory() {
 # ----- Disk -----
 probe_disk() {
   disk_pct="$(df -P / 2>/dev/null | awk 'NR==2{gsub(/%/,"",$5); print $5}')"
-}
-
-# ----- I/O wait -----
-probe_iowait() {
-  local a b total_a total_b idle_a idle_b iow_a iow_b totald iowd
-  a="$(grep '^cpu ' /proc/stat 2>/dev/null)"
-  [ -z "$a" ] && return
-  sleep 0.01
-  b="$(grep '^cpu ' /proc/stat 2>/dev/null)"
-  [ -z "$b" ] && return
-
-  a=($a); b=($b)
-  iow_a="${a[5]}"; iow_b="${b[5]}"
-  total_a=0; for i in "${a[@]:1}"; do total_a=$((total_a+i)); done
-  total_b=0; for i in "${b[@]:1}"; do total_b=$((total_b+i)); done
-  totald=$((total_b-total_a))
-  iowd=$((iow_b-iow_a))
-  if [ "${totald}" -gt 0 ]; then
-    iowait_pct="$(awk -v t="${totald}" -v w="${iowd}" 'BEGIN{printf("%.0f",(w/t)*100)}')"
-  fi
 }
 
 # ----- Uptime -----
@@ -263,7 +258,6 @@ collect_all_metrics() {
   probe_audio
   
   # I/O and network metrics (may add slight delay)
-  probe_iowait
   probe_network_bandwidth
   probe_disk_io
   probe_network
