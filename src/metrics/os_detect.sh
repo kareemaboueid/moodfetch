@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Linux distribution detection and system interface discovery for moodfetch.
-# Identifies Linux distribution and available system interfaces for metrics collection.
+# Linux distribution and available system interfaces for metrics collection.
 
 # OS family constants
 OS_LINUX="linux"
@@ -101,14 +101,6 @@ is_linux() {
     [ "$CURRENT_OS" = "$OS_LINUX" ]
 }
 
-is_macos() {
-    [ "$CURRENT_OS" = "$OS_MACOS" ]
-}
-
-is_bsd() {
-    [ "$CURRENT_OS" = "$OS_BSD" ]
-}
-
 # Public: Get current OS family
 get_os_family() {
     echo "$CURRENT_OS"
@@ -121,54 +113,4 @@ has_procfs() {
 
 has_sysfs() {
     $HAS_SYSFS
-}
-
-has_sysctl() {
-    $HAS_SYSCTL
-}
-
-has_ioreg() {
-    $HAS_IOREG
-}
-
-has_powermetrics() {
-    $HAS_POWERMETRICS
-}
-
-# Return appropriate sysctl command for current OS
-get_sysctl_cmd() {
-    local key="$1"
-    case "$CURRENT_OS" in
-        $OS_LINUX)
-            echo "sysctl -n $key 2>/dev/null"
-            ;;
-        $OS_MACOS|$OS_BSD)
-            echo "sysctl -n $key 2>/dev/null"
-            ;;
-        *)
-            echo "false"  # Fail safely
-            ;;
-    esac
-}
-
-# Safely read sysctl value with fallback
-read_sysctl() {
-    local key="$1"
-    local fallback="$2"
-    local cmd
-    cmd="$(get_sysctl_cmd "$key")"
-    
-    if [ "$cmd" = "false" ]; then
-        echo "$fallback"
-        return 1
-    fi
-    
-    local val
-    val="$(eval "$cmd")" || true
-    if [ -n "$val" ]; then
-        echo "$val"
-    else
-        echo "$fallback"
-        return 1
-    fi
 }

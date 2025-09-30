@@ -85,8 +85,18 @@ check_for_updates() {
     # Try git ls-remote first (faster and more reliable)
     if has_cmd git && remote_commit=$(timeout 1.5s git ls-remote origin main 2>/dev/null | cut -f1); then
         log_debug "Got remote commit via git ls-remote: ${remote_commit:0:8}"
-    elif has_cmd curl && remote_commit=$(timeout 1.5s curl -s --max-time 1.5 "https://api.github.com/repos/kareemaboueid/moodfetch/commits/main" 2>/dev/null | grep -o '"sha": *"[^"]*"' | head -1 | cut -d'"' -f4); then
-        log_debug "Got remote commit via GitHub API: ${remote_commit:0:8}"
+    elif has_cmd curl; then
+        # Use GitHub API as fallback
+        local api_url="https://api.github.com/repos/kareemaboueid/moodfetch/commits/main"
+        local api_response
+        api_response=$(timeout 1.5s curl -s --max-time 1.5 "$api_url" 2>/dev/null)
+        remote_commit=$(echo "$api_response" | grep -o '"sha": *"[^"]*"' | head -1 | cut -d'"' -f4)
+        if [[ -n "$remote_commit" ]]; then
+            log_debug "Got remote commit via GitHub API: ${remote_commit:0:8}"
+        else
+            log_debug "Could not parse GitHub API response"
+            return 0
+        fi
     else
         log_debug "Could not check for updates (network timeout or unavailable)"
         return 0

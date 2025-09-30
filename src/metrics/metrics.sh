@@ -67,7 +67,7 @@ probe_cpu() {
   local a b idle_a idle_b total_a total_b totald idled
   a="$(grep '^cpu ' /proc/stat 2>/dev/null)"
   [ -z "$a" ] && return
-  sleep 0.02
+  sleep 0.01
   b="$(grep '^cpu ' /proc/stat 2>/dev/null)"
   [ -z "$b" ] && return
 
@@ -120,7 +120,7 @@ probe_iowait() {
   local a b total_a total_b idle_a idle_b iow_a iow_b totald iowd
   a="$(grep '^cpu ' /proc/stat 2>/dev/null)"
   [ -z "$a" ] && return
-  sleep 0.02
+  sleep 0.01
   b="$(grep '^cpu ' /proc/stat 2>/dev/null)"
   [ -z "$b" ] && return
 
@@ -195,17 +195,17 @@ probe_network_bandwidth() {
   rx_bytes="$(cat "/sys/class/net/$dev/statistics/rx_bytes" 2>/dev/null)" || return
   tx_bytes="$(cat "/sys/class/net/$dev/statistics/tx_bytes" 2>/dev/null)" || return
   
-  # Wait a short interval
-  sleep 0.1
+  # Wait a minimal interval for measurement
+  sleep 0.05
   
   # Read final values
   local rx_bytes2 tx_bytes2
   rx_bytes2="$(cat "/sys/class/net/$dev/statistics/rx_bytes" 2>/dev/null)" || return
   tx_bytes2="$(cat "/sys/class/net/$dev/statistics/tx_bytes" 2>/dev/null)" || return
   
-  # Calculate rates (bytes per second)
-  net_rx_bps="$(( (rx_bytes2 - rx_bytes) * 10 ))"
-  net_tx_bps="$(( (tx_bytes2 - tx_bytes) * 10 ))"
+  # Calculate rates (bytes per second, adjusted for timing)
+  net_rx_bps="$(( (rx_bytes2 - rx_bytes) * 20 ))"
+  net_tx_bps="$(( (tx_bytes2 - tx_bytes) * 20 ))"
 }
 
 # ----- Disk I/O rates -----
@@ -223,15 +223,15 @@ probe_disk_io() {
   sectors_write="$(cat "/sys/block/$dev/stat" 2>/dev/null | awk '{print $7}')" || return
   
   # Wait a short interval
-  sleep 0.1
+  sleep 0.05
   
   # Read final values
   sectors_read2="$(cat "/sys/block/$dev/stat" 2>/dev/null | awk '{print $3}')" || return
   sectors_write2="$(cat "/sys/block/$dev/stat" 2>/dev/null | awk '{print $7}')" || return
   
   # Calculate rates (bytes per second), assuming 512-byte sectors
-  disk_read_bps="$(( (sectors_read2 - sectors_read) * 5120 ))"  # *512/0.1
-  disk_write_bps="$(( (sectors_write2 - sectors_write) * 5120 ))"
+  disk_read_bps="$(( (sectors_read2 - sectors_read) * 10240 ))"  # *512/0.05
+  disk_write_bps="$(( (sectors_write2 - sectors_write) * 10240 ))"
 }
 
 # Public: gather everything in one go
