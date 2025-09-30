@@ -77,6 +77,8 @@ strip_placeholders() {
 # 10) Random witty fallback
 
 mood_engine_pick() {
+  # Set default for verbose flag to prevent undefined variable errors
+  local verbose=${verbose:-false}
   local category="" template="" message=""
 
   # ---- Battery branch ----

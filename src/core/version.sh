@@ -46,7 +46,7 @@ check_for_updates() {
     if ! has_cmd "curl"; then
         log_error "curl is required for update checking"
         return 1
-    }
+    fi
 
     log_debug "Checking for updates..."
     
@@ -58,7 +58,7 @@ check_for_updates() {
     if [ -z "$response" ]; then
         log_error "Failed to check for updates"
         return 1
-    }
+    fi
     
     # Extract version from response (assuming tag_name format like "v1.2.3")
     local latest_version
@@ -67,7 +67,7 @@ check_for_updates() {
     if [ -z "$latest_version" ]; then
         log_error "Failed to parse latest version"
         return 1
-    }
+    fi
     
     # Compare versions
     local current_parts

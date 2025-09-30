@@ -2,13 +2,6 @@
 # Collects system metrics in a best-effort, portable manner.
 # Exports variables that the mood engine and templates rely on.
 
-# Source Linux metrics modules
-# shellcheck source=/dev/null
-. "${script_dir}/os_detect.sh"
-
-# Initialize system detection
-init_os_detect
-
 # Defaults so renderers never crash even if a probe fails
 battery_pct=""
 cpu_temp=""
@@ -246,81 +239,39 @@ probe_disk_io() {
 collect_all_metrics() {
   log_debug "Starting metrics collection on $CURRENT_OS"
   
-  case "$CURRENT_OS" in
-    "$OS_MACOS")
-      # macOS-specific probes
-      probe_os_identity &
-      probe_macos_processes &
-      
-      probe_macos_battery
-      probe_macos_cpu
-      probe_macos_memory
-      probe_macos_disk
-      
-      # GPU probes if available
-      discover_gpu_tools
-      gpu_temp="$(probe_gpu_temp)"
-      gpu_util_pct="$(probe_gpu_util)"
-      gpu_mem_pct="$(probe_gpu_memory)"
-      
-      # I/O probes
-      probe_macos_disk_io
-      probe_macos_network
-      probe_macos_wifi
-      probe_macos_volume
-      ;;
-      
-    "$OS_LINUX")
-      # Linux-specific probes
-      probe_os_identity &
-      probe_process_count &
-      probe_power_profile &
-      
-      probe_battery
-      probe_cpu
-      probe_cpu_temp
-      probe_memory
-      probe_disk
-      probe_uptime
-      probe_audio
-      
-      discover_gpu_tools
-      gpu_temp="$(probe_gpu_temp)"
-      gpu_util_pct="$(probe_gpu_util)"
-      gpu_mem_pct="$(probe_gpu_memory)"
-      
-      probe_iowait
-      probe_network_bandwidth
-      probe_disk_io
-      probe_network
-      probe_top_process
-      ;;
-      
-    "$OS_BSD")
-      # BSD probes (fallback to sysctl where possible)
-      probe_os_identity
-      
-      if has_procfs; then
-        probe_process_count &
-        probe_cpu
-        probe_memory
-      fi
-      
-      if has_sysctl; then
-        # Use sysctl for basic metrics
-        load_per_core="$(read_sysctl "vm.loadavg" | awk '{print $2}')"
-        ram_pct="$(read_sysctl "vm.stats.vm.v_active_count" "")"
-      fi
-      ;;
-      
-    *)
-      log_warn "Unsupported OS: $CURRENT_OS"
-      probe_os_identity
-      ;;
-  esac
+  # Only support Linux - warn and continue with basic probes for other OS
+  if [ "$CURRENT_OS" != "$OS_LINUX" ]; then
+    log_warn "Unsupported OS: $CURRENT_OS - limited functionality"
+    probe_os_identity
+    return
+  fi
   
-  # Wait for background probes
+  # Linux-specific metrics collection
+  log_debug "Collecting Linux system metrics"
+  
+  # Start background probes first
+  probe_os_identity &
+  probe_process_count &
+  probe_power_profile &
+  
+  # Core system metrics
+  probe_battery
+  probe_cpu
+  probe_cpu_temp
+  probe_memory
+  probe_disk
+  probe_uptime
+  probe_audio
+  
+  # I/O and network metrics (may add slight delay)
+  probe_iowait
+  probe_network_bandwidth
+  probe_disk_io
+  probe_network
+  probe_top_process
+  
+  # Wait for background probes to complete
   wait
   
-  log_debug "Metrics collection complete"
+  log_debug "Linux metrics collection complete"
 }

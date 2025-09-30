@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.4.9]
+
+- Fixed incorrect module sourcing path in metrics.sh
+  - Corrected os_detect.sh import path from script_dir to metrics subdirectory
+  - Ensures OS detection functionality works properly
+- Completed os_detect.sh implementation for Linux-only support
+  - Added missing OS constants and CURRENT_OS variable
+  - Fixed incomplete init_os_detect function with proper case statement
+  - Added Linux distribution detection
+  - Implemented all missing public interface functions
+  - Removed incomplete cross-platform code to focus on Linux
+- Cleaned up minor code duplication and undefined variables
+  - Removed duplicate exit statement in --check-update flag handling
+  - Added default values for verbose and no_color variables to prevent errors
+- Fixed install.sh to match current directory structure
+  - Updated module installation paths to use src/core and src/metrics subdirectories
+  - Added proper directory structure creation during installation
+  - Fixed module lookup paths to match reorganized project layout
+- Removed unused macOS and BSD probe references
+  - Cleaned up metrics collection to focus on Linux-only functionality
+  - Removed calls to non-existent macOS and BSD probe functions  
+  - Simplified collect_all_metrics function for Linux-only support
+  - Added warning for unsupported operating systems
+
 ## [0.4.8]
 
 - Reorganized project structure

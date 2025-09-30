@@ -4,12 +4,19 @@
 # shellcheck disable=2009
 
 # Resolve script directory:
-# - If installed via `make install`, prefer /usr/local/share/moodfetch
-# - Otherwise, fall back to local repo path
-if [ -d "/usr/local/share/moodfetch" ]; then
+# - For development, check if we're in a git repo and use src/ subdirectory  
+# - If installed via `make install`, use /usr/local/share/moodfetch
+# - Otherwise, fall back to local repo path with src/ subdirectory
+repo_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+if [ -d "${repo_dir}/.git" ] && [ -d "${repo_dir}/src" ]; then
+  # We're in development mode - use src/ subdirectory
+  script_dir="${repo_dir}/src"
+elif [ -d "/usr/local/share/moodfetch/core" ]; then
+  # Use installed version if it has the new structure
   script_dir="/usr/local/share/moodfetch"
 else
-  script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+  # Fallback to local src/ directory
+  script_dir="${repo_dir}/src"
 fi
 
 # Source our modules (quietly). Each module guards its own functions.
@@ -25,12 +32,18 @@ for f in "utils.sh" "logging.sh" "version.sh" "signals.sh"; do
 done
 
 # Configuration module
-if [ ! -f "${script_dir}/config/config.sh" ]; then
+config_path="${script_dir}/config/config.sh"
+# For development mode, config is in repo root
+if [ -d "${repo_dir}/.git" ] && [ -f "${repo_dir}/config/config.sh" ]; then
+  config_path="${repo_dir}/config/config.sh"
+fi
+
+if [ ! -f "${config_path}" ]; then
   echo "Missing configuration module. Please reinstall Moodfetch." >&2
   exit 1
 fi
 # shellcheck disable=SC1090
-. "${script_dir}/config/config.sh"
+. "${config_path}"
 
 # Metrics and mood modules
 for f in "templates.sh" "metrics.sh" "mood_engine.sh" "os_detect.sh"; do
@@ -49,6 +62,9 @@ init_signal_handlers
 # Initialize configuration system
 init_config
 
+# Initialize OS detection now that all utilities are loaded
+init_os_detect
+
 # --- Parse flags (simple getopt-style) ---
 # Parse command line arguments
 for arg in "$@"; do
@@ -59,7 +75,6 @@ for arg in "$@"; do
       ;;
     --check-update)
       check_for_updates
-      exit 0
       exit 0
       ;;
     --debug)
@@ -82,6 +97,9 @@ done
 
 # --- MAIN ---
 main() {
+  # Set defaults for undefined variables to prevent errors
+  local no_color=${no_color:-false}
+  
   # Bold "Mood" header; if no ANSI, the raw text is still fine
   if $no_color; then
     echo "Mood"
