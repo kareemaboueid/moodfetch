@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.7]
+
+- Simplified project structure
+  - Removed theme system in favor of classic sarcastic personality
+  - Removed additional theme files and configurations
+  - Streamlined installation process
+  - Simplified configuration options
+- Performance improvements
+  - Reduced code complexity
+  - Removed unused theme management code
+  - Optimized template loading
+
 ## [0.4.6]
 
 - Refactored for Linux-only support

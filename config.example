@@ -35,7 +35,4 @@ net_high=50             # Network bandwidth warning (MB/s)
 proc_high=500           # Process count warning threshold
 disk_io_high=100        # Disk I/O warning (MB/s)
 
-# Theme settings
-theme=sarcastic          # Mood personality (sarcastic, professional, friendly)
-theme_cycle=false       # Randomly cycle through available themes
-theme_cycle_exclude=""  # Comma-separated list of themes to exclude from cycling
+# No theme settings needed - using classic sarcastic personality

@@ -16,7 +16,7 @@ CONFIG_DEFAULTS=(
   "cpu_high_load=75"                 # CPU utilization warning (%)
   "ram_high=85"                      # RAM usage warning (%)
   "disk_high=90"                     # Disk usage warning (%)
-  "theme=sarcastic"                  # Mood theme (future: professional, friendly)
+  # No theme configuration needed - using classic sarcastic personality
 )
 
 # Paths for configuration files (in order of precedence)
