@@ -119,9 +119,18 @@ mood_engine_pick() {
     fi
   fi
 
-  # Default calm
+  # Default calm - but add some variety
   if [ -z "${category}" ]; then
-    category="default_ok_tpl"
+    # Add randomness even when system is normal (20% chance for witty fallback)
+    local random_mood=$((RANDOM % 100))
+    if [[ $random_mood -lt 20 ]]; then
+      # Use a witty fallback instead of default
+      message="$(random_witty_fallback)"
+      printf '%s' "${message}"
+      return 0
+    else
+      category="default_ok_tpl"
+    fi
   fi
 
   # Pick a template line from the chosen array

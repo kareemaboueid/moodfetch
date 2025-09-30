@@ -7,7 +7,8 @@
 # - For development, check if we're in a git repo and use src/ subdirectory  
 # - If installed via `make install`, use /usr/local/share/moodfetch
 # - Otherwise, fall back to local repo path with src/ subdirectory
-repo_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+script_path="$(readlink -f "${BASH_SOURCE[0]}")"
+repo_dir="$(dirname "$script_path")"
 if [ -d "${repo_dir}/.git" ] && [ -d "${repo_dir}/src" ]; then
   # We're in development mode - use src/ subdirectory
   script_dir="${repo_dir}/src"
@@ -80,13 +81,13 @@ check_for_updates() {
     local remote_commit
     
     # Try git ls-remote first (faster and more reliable)
-    if has_cmd git && remote_commit=$(timeout 1.5s git ls-remote origin main 2>/dev/null | cut -f1); then
+    if has_cmd git && remote_commit=$(timeout 0.5s git ls-remote origin main 2>/dev/null | cut -f1); then
         log_debug "Got remote commit via git ls-remote: ${remote_commit:0:8}"
     elif has_cmd curl; then
         # Use GitHub API as fallback
         local api_url="https://api.github.com/repos/kareemaboueid/moodfetch/commits/main"
         local api_response
-        api_response=$(timeout 1.5s curl -s --max-time 1.5 "$api_url" 2>/dev/null)
+        api_response=$(timeout 0.5s curl -s --max-time 0.5 "$api_url" 2>/dev/null)
         remote_commit=$(echo "$api_response" | grep -o '"sha": *"[^"]*"' | head -1 | cut -d'"' -f4)
         if [[ -n "$remote_commit" ]]; then
             log_debug "Got remote commit via GitHub API: ${remote_commit:0:8}"
@@ -133,8 +134,10 @@ show_update_notification() {
 # Initialize OS detection now that all utilities are loaded
 init_os_detect
 
-# Check for updates if we're in a git repository
-check_for_updates
+# Check for updates if we're in a git repository (can be disabled with MOODFETCH_SKIP_UPDATE=1)
+if [[ "${MOODFETCH_SKIP_UPDATE:-}" != "1" ]]; then
+    check_for_updates
+fi
 
 # --- MAIN ---
 main() {
