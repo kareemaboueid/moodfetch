@@ -19,24 +19,9 @@ Moodfetch displays your system's "mood" by fetching and presenting various syste
 
 - procfs and sysfs mounted (standard on most distributions)
 - Optional:
-  - `curl` → weather moods
   - `nmcli` → Wi-Fi signal strength
   - `pactl` / `amixer` → audio volume moods
-
-#### macOS
-
-- Xcode Command Line Tools (for basic compilation tools)
-- Optional:
-  - `smckit` → CPU temperature monitoring
-  - Root access → detailed CPU/GPU metrics via powermetrics
-  - `osascript` → volume control monitoring
-
-#### BSD Systems
-
-- Base system with sysctl support
-- Optional:
-  - procfs mounted → enhanced CPU/memory metrics
-  - `curl` → weather moods
+  - `powerprofilesctl` → power profile detection
 
 ## Install
 

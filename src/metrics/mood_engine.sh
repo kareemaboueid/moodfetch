@@ -2,47 +2,6 @@
 # Decides which mood to show, based on metrics and priorities.
 # Uses templates.sh for rich, sarcastic messages and utils.sh for rendering.
 
-# Weather: best-effort via ipinfo + wttr.in (kept here so it’s easy to disable if offline)
-get_weather_mood_line() {
-  # quick exit if curl not available
-  if ! has_cmd curl; then
-    return 1
-  fi
-
-  # NOTE: Added --max-time 1.5s to avoid slow hangs, fail silently if too slow
-  local city cond temp
-  city="$(curl -s --max-time 1.5 ipinfo.io/city 2>/dev/null)"
-  cond="$(curl -s --max-time 1.5 "https://wttr.in?format=%C" 2>/dev/null)"
-  temp="$(curl -s --max-time 1.5 "https://wttr.in?format=%t" 2>/dev/null)"
-
-  # Require at least condition; city/temp are nice-to-have
-  if [ -z "${cond}" ]; then
-    # fast exit: don’t block mood if weather fails or it's gonna be slow as hell!
-    # we return a sarcastic fallback line for offline cases
-    printf 'Weather check skipped — assume gloomy skies and worse Wi-Fi.'
-    return 0
-  fi
-
-  # Simplified categorization
-  case "${cond}" in
-    *Sunny*|*Clear* )
-      printf 'In %s, it is %s %s — my circuits are jealous.' "${city:-somewhere}" "${cond}" "${temp:-}"
-      ;;
-    *Rain*|*Drizzle* )
-      printf 'In %s, it is %s %s — glad I am indoors, unlike your socks.' "${city:-outside}" "${cond}" "${temp:-}"
-      ;;
-    *Cloud*|*Overcast* )
-      printf 'In %s, it is %s %s — gray skies, gray processes.' "${city:-your area}" "${cond}" "${temp:-}"
-      ;;
-    *Snow*|*Sleet* )
-      printf 'In %s, it is %s %s — frozen bits, but still moving.' "${city:-Narnia}" "${cond}" "${temp:-}"
-      ;;
-    * )
-      printf 'In %s, it is %s %s — weather and systems both moody.' "${city:-somewhere}" "${cond}" "${temp:-}"
-      ;;
-  esac
-  return 0
-}
 
 # If everything is fine/boring, pick a random witty fallback.
 random_witty_fallback() {
@@ -73,7 +32,6 @@ strip_placeholders() {
 # 6) Power never sleep (skipped unless easily detectable)
 # 7) Audio muted
 # 8) Default OK
-# 9) Weather mood as an extra flavor if nothing critical happened
 # 10) Random witty fallback
 
 mood_engine_pick() {
@@ -164,14 +122,6 @@ mood_engine_pick() {
 
   # Fill placeholders (numbers) always
   message="$(render_placeholders "${template}")"
-
-  # If we landed on "default_ok", try to spice with weather; if weather fails, we’re still good.
-  if [ "${category}" = "default_ok_tpl" ]; then
-    local weather_line
-    if weather_line="$(get_weather_mood_line)"; then
-      message="${weather_line}"
-    fi
-  fi
 
   # If for any reason message is empty, use witty fallback
   if [ -z "${message}" ]; then

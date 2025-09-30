@@ -4,7 +4,6 @@
 
 # Default configuration values
 CONFIG_DEFAULTS=(
-  "weather_timeout=1.5"              # Weather API timeout in seconds
   "battery_critical=15"              # Battery critical threshold (%)
   "battery_low=30"                   # Battery low threshold (%)
   "cpu_hot=80"                       # CPU temperature warning (°C)

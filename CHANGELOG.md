@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.4.10]
+
+- Removed weather functionality for offline-only moods
+  - Eliminated external API dependencies (ipinfo.io, wttr.in)
+  - Simplified mood engine to focus only on local system metrics
+  - Faster, more reliable operation without network delays
+  - All moods now based purely on device performance and status
+
+- Comprehensive code cleanup and bug fixes
+  - Fixed syntax errors in mood_engine.sh and other core files
+  - Removed duplicate function definitions in os_detect.sh
+  - Added numeric validation to prevent arithmetic errors
+  - Cleaned up unused templates and placeholder code
+  - Enhanced error handling throughout the codebase
+  - Improved production stability and reliability
+
 ## [0.4.9]
 
 - Fixed incorrect module sourcing path in metrics.sh

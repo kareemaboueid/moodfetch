@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# Mood templates. Placeholders: {battery_pct} {cpu_temp} {cpu_util_pct} {ram_pct} {swap_pct}
-# {disk_pct} {uptime_h} {iface} {wifi_signal} {top_proc} {distro} {kernel} {hostname} {profile} {iowait_pct}
-# {net_rx_bps} {net_tx_bps} {process_count} {disk_read_bps} {disk_write_bps}
+# Mood templates for system status messages
+# Placeholders: {battery_pct} {cpu_temp} {cpu_util_pct} {load_per_core} {ram_pct} {swap_pct}
+# {disk_pct} {uptime_h} {iface} {wifi_signal} {top_proc} {distro} {kernel} {hostname} {profile} 
+# {iowait_pct} {volume_pct} {net_rx_bps} {net_tx_bps} {process_count} {disk_read_bps} {disk_write_bps}
 set -u
 
 battery_critical_tpl=(
@@ -16,13 +17,6 @@ battery_low_tpl=(
   "We're at {battery_pct}%% battery, which pairs beautifully with your 'I'll plug it later' routine. Bold."
   "Energy at {battery_pct}%%. I could make it… or not. Want to gamble on unsaved work?"
   "Low battery ({battery_pct}%%), high anxiety. A classic duo."
-)
-
-charging_tpl=(
-  "Charging — at last. Like caffeine for silicon. Keep the cable steady and I might forgive the earlier neglect."
-  "Cable connected, electrons flowing. My mood improves in direct proportion to volts per second."
-  "We're sipping power like fine espresso. Current status: smug and charging."
-  "Charger locked. I'm swelling with electrons and self-respect; don't yank the cord."
 )
 
 cpu_hot_tpl=(
@@ -65,22 +59,10 @@ uptime_zombie_tpl=(
   "We crossed {uptime_h} hours. Not a server farm. I have feelings. Mostly sarcasm."
 )
 
-net_offline_tpl=(
-  "Network is down — a perfect time to reflect on life choices and why you didn't cache docs."
-  "Offline. Peace at last. The memes will miss you."
-  "Disconnected. It's quiet… too quiet. Even my NIC is meditating."
-)
-
 wifi_weak_tpl=(
   "Wi-Fi signal {wifi_signal}%% on {iface}: I'm whispering to the router from another dimension."
   "Signal at {wifi_signal}%% — I've seen stronger commitments in comment sections."
   "Your Wi-Fi bars are doing minimalism. Connectivity by interpretive art."
-)
-
-power_never_sleep_tpl=(
-  "Sleep timeout disabled — delightful. I adore being your glowing desk ornament at 3AM."
-  "Never-sleep mode engaged. I'm the insomniac you wanted and absolutely didn't need."
-  "No auto-suspend. I'll stare into the void while you forget I exist."
 )
 
 audio_muted_tpl=(
@@ -88,20 +70,6 @@ audio_muted_tpl=(
   "Volume at {volume_pct}%%. Trying interpretive dance instead of audio."
   "Muted. Either zen mode or forgot the volume again."
   "Shh... we're being stealthy (or the audio's broken)."
-)
-
-gpu_hot_tpl=(
-  "GPU running at {gpu_temp}°C. Either mining crypto or accidentally training Skynet."
-  "Your GPU ({gpu_temp}°C) is auditioning for a role in 'Things That Could Cook Eggs'."
-  "Graphics card hitting {gpu_temp}°C. Doubles as emergency hand warmer."
-  "GPU temperature: {gpu_temp}°C. Considering a second career as a space heater."
-)
-
-gpu_pressure_tpl=(
-  "GPU at {gpu_util_pct}%% util, {gpu_mem_pct}%% memory. Someone's enjoying their ray-traced spreadsheets."
-  "Graphics going {gpu_util_pct}%% full throttle. Must be those ultra-HD cat videos."
-  "GPU memory {gpu_mem_pct}%% full. Your desktop effects are very... effective."
-  "GPU utilization {gpu_util_pct}%%. Either gaming or Chrome opened a new tab."
 )
 
 net_busy_tpl=(

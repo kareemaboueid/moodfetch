@@ -8,9 +8,6 @@ debug_enabled=false         # Enable debug logging (can be overridden with --deb
 procfs_path="/proc"        # Path to procfs mount
 sysfs_path="/sys"         # Path to sysfs mount
 
-# Performance settings
-weather_timeout=1.5        # Weather API timeout in seconds
-
 # System warning thresholds
 cpu_hot=80               # CPU temperature warning (°C)
 cpu_high_load=75         # CPU utilization warning (%)
