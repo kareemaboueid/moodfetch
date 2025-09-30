@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.0]
+
+- Added configuration system with support for both user (~/.config/moodfetch/config) and system-wide (/etc/moodfetch/config) settings
+- Added configurable thresholds for warnings (battery, CPU, RAM, disk)
+- Added example configuration file
+- Made color scheme, ASCII art preferences, and metrics display configurable
+- Updated installation to include example config file
+
 ## [0.3.2]
 
 - Removed unused `gpu_model` metric probe to simplify codebase.

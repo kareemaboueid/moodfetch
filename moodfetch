@@ -15,7 +15,7 @@ fi
 # Source our modules (quietly). Each module guards its own functions.
 # These files are part of the project and expected to exist side-by-side.
 # If any is missing, we bail with a friendly message.
-for f in "utils.sh" "templates.sh" "metrics.sh" "mood_engine.sh"; do
+for f in "utils.sh" "templates.sh" "metrics.sh" "mood_engine.sh" "config.sh"; do
   if [ ! -f "${script_dir}/${f}" ]; then
     echo "Missing dependency: ${f}. Please reinstall Moodfetch." >&2
     exit 1
@@ -24,11 +24,15 @@ for f in "utils.sh" "templates.sh" "metrics.sh" "mood_engine.sh"; do
   . "${script_dir}/${f}"
 done
 
+# Initialize configuration system
+init_config
+
 # --- Parse flags (simple getopt-style) ---
-show_ascii=true
-compact_ascii=false
-verbose=false
-strip_metrics_placeholders=true   # default: hide numbers inside mood text
+# CLI flags override config file settings
+show_ascii="$(get_config CONFIG_SHOW_ASCII true)"
+compact_ascii="$(get_config CONFIG_COMPACT_ASCII false)"
+verbose="$(get_config CONFIG_VERBOSE false)"
+strip_metrics_placeholders="$(get_config CONFIG_HIDE_METRICS true)"   # default: hide numbers inside mood text
 
 # detect non-TTY → auto-disable colors
 if [ ! -t 1 ]; then

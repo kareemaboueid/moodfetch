@@ -39,6 +39,27 @@ Just run:
 moodfetch
 ```
 
+## Configuration
+
+Moodfetch can be configured using either:
+
+- System-wide config: `/etc/moodfetch/config`
+- User config: `~/.config/moodfetch/config`
+
+Copy the example config file to get started:
+
+```bash
+# For current user only:
+mkdir -p ~/.config/moodfetch/
+cp /etc/moodfetch/config.example ~/.config/moodfetch/config
+
+# Or system-wide:
+sudo cp /etc/moodfetch/config.example /etc/moodfetch/config
+```
+
+Configuration options include display preferences, warning thresholds, and theme settings.
+CLI flags override config file settings.
+
 ## Options
 
 | Flag             | Description                                  |
