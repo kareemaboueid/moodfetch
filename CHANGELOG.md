@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.4.1]
+
+- Added comprehensive GPU metrics collection with multi-vendor support
+  - Temperature monitoring for NVIDIA, Intel, and AMD GPUs
+  - Utilization tracking with driver-specific methods
+  - GPU memory usage monitoring
+  - Smart fallbacks for different hardware
+- Added real-time I/O metrics
+  - Network bandwidth monitoring (rx/tx rates)
+  - Disk read/write rates
+  - Process count tracking
+- Added new mood templates for hardware states
+  - GPU temperature and utilization
+  - Network bandwidth usage
+  - Process count warnings
+- Updated configuration with new thresholds
+  - GPU temperature and utilization limits
+  - Network bandwidth thresholds
+  - Process count warning levels
+  - Disk I/O warning thresholds
+
 ## [0.4.0]
 
 - Added robust error handling and logging system

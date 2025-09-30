@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Sarcastic templates. Placeholders: {battery_pct} {cpu_temp} {cpu_util_pct} {ram_pct} {swap_pct}
 # {disk_pct} {uptime_h} {iface} {wifi_signal} {top_proc} {distro} {kernel} {hostname} {profile} {iowait_pct}
+# {gpu_temp} {gpu_util_pct} {gpu_mem_pct} {net_rx_bps} {net_tx_bps} {process_count} {disk_read_bps} {disk_write_bps}
 set -u
 
 battery_critical_tpl=(
@@ -83,13 +84,43 @@ power_never_sleep_tpl=(
 )
 
 audio_muted_tpl=(
-  "Audio muted at {volume_pct}%% — I enjoy your pantomime computing style."
-  "Silence selected. Bold choice for a device that beeps for a living."
-  "Muted. If you clap and I don't respond, assume it's intentional."
+  "Silent mode engaged. Not sure if peace or malfunction."
+  "Volume at {volume_pct}%%. Trying interpretive dance instead of audio."
+  "Muted. Either zen mode or forgot the volume again."
+  "Shh... we're being stealthy (or the audio's broken)."
+)
+
+gpu_hot_tpl=(
+  "GPU running at {gpu_temp}°C. Either mining crypto or accidentally training Skynet."
+  "Your GPU ({gpu_temp}°C) is auditioning for a role in 'Things That Could Cook Eggs'."
+  "Graphics card hitting {gpu_temp}°C. Doubles as emergency hand warmer."
+  "GPU temperature: {gpu_temp}°C. Considering a second career as a space heater."
+)
+
+gpu_pressure_tpl=(
+  "GPU at {gpu_util_pct}%% util, {gpu_mem_pct}%% memory. Someone's enjoying their ray-traced spreadsheets."
+  "Graphics going {gpu_util_pct}%% full throttle. Must be those ultra-HD cat videos."
+  "GPU memory {gpu_mem_pct}%% full. Your desktop effects are very... effective."
+  "GPU utilization {gpu_util_pct}%%. Either gaming or Chrome opened a new tab."
+)
+
+net_busy_tpl=(
+  "Network humming at {net_rx_bps}B/s down, {net_tx_bps}B/s up. Popular today, aren't we?"
+  "Bandwidth party: {net_rx_bps}B/s incoming. Your ISP must love you."
+  "Moving {net_tx_bps}B/s of data. Trying to download the internet?"
+  "Network activity intense. Either big download or neighbor found your Wi-Fi."
+)
+
+proc_high_tpl=(
+  "Running {process_count} processes. Task Manager's worst nightmare."
+  "Process count: {process_count}. Your CPU is running a small city."
+  "{process_count} processes and counting. Chrome tabs, I assume?"
+  "Managing {process_count} processes. Multitasking or Chrome solitaire?"
 )
 
 default_ok_tpl=(
-  "Everything's suspiciously fine on {distro} ({kernel}) — which statistically means chaos ETA one tab."
-  "System calm, {hostname} aligned, universe indifferent. Let's not ask 'what could go wrong'."
-  "Balanced profile {profile}, temps tame, network alive. Serenity makes me nervous."
+  "All systems nominal. Almost suspiciously so."
+  "Everything's fine. Not even a sarcastic comment needed."
+  "Running smoothly. I'll find something to complain about later."
+  "Status: Surprisingly functional. Don't get used to it."
 )

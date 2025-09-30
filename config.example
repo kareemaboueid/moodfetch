@@ -23,5 +23,13 @@ cpu_high_load=75         # CPU utilization warning (%)
 ram_high=85              # RAM usage warning (%)
 disk_high=90             # Disk usage warning (%)
 
+# New hardware thresholds
+gpu_hot=75              # GPU temperature warning (°C)
+gpu_high_load=85        # GPU utilization warning (%)
+gpu_mem_high=90         # GPU memory usage warning (%)
+net_high=50             # Network bandwidth warning (MB/s)
+proc_high=500           # Process count warning threshold
+disk_io_high=100        # Disk I/O warning (MB/s)
+
 # Theme settings
 theme=sarcastic          # Mood personality (future: professional, friendly)

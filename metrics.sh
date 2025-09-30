@@ -2,6 +2,10 @@
 # Collects system metrics in a best-effort, portable manner.
 # Exports variables that the mood engine and templates rely on.
 
+# Source GPU metrics module
+# shellcheck source=/dev/null
+. "${script_dir}/gpu_metrics.sh"
+
 # Defaults so renderers never crash even if a probe fails
 battery_pct=""
 cpu_temp=""
@@ -20,6 +24,16 @@ kernel=""
 hostname=""
 profile=""
 volume_pct=""
+
+# New metrics
+gpu_temp=""         # GPU temperature in °C
+gpu_util_pct=""     # GPU utilization percentage
+gpu_mem_pct=""      # GPU memory usage percentage
+net_rx_bps=""       # Network receive bandwidth in bytes/sec
+net_tx_bps=""       # Network transmit bandwidth in bytes/sec
+process_count=""    # Total running processes
+disk_read_bps=""    # Disk read bandwidth in bytes/sec
+disk_write_bps=""   # Disk write bandwidth in bytes/sec
 
 # ----- OS / identity -----
 probe_os_identity() {
@@ -171,27 +185,96 @@ probe_power_profile() {
   fi
 }
 
+# ----- Process count -----
+probe_process_count() {
+  process_count="$(ps -e 2>/dev/null | wc -l)" || true
+}
+
+# ----- Network bandwidth -----
+probe_network_bandwidth() {
+  local dev rx_bytes tx_bytes
+  # Try to use the first active interface
+  dev="$(ip -br link show up 2>/dev/null | grep -v 'lo' | head -n1 | cut -d' ' -f1)" || return
+  if [ -z "$dev" ]; then
+    return
+  fi
+
+  # Read initial values
+  rx_bytes="$(cat "/sys/class/net/$dev/statistics/rx_bytes" 2>/dev/null)" || return
+  tx_bytes="$(cat "/sys/class/net/$dev/statistics/tx_bytes" 2>/dev/null)" || return
+  
+  # Wait a short interval
+  sleep 0.1
+  
+  # Read final values
+  local rx_bytes2 tx_bytes2
+  rx_bytes2="$(cat "/sys/class/net/$dev/statistics/rx_bytes" 2>/dev/null)" || return
+  tx_bytes2="$(cat "/sys/class/net/$dev/statistics/tx_bytes" 2>/dev/null)" || return
+  
+  # Calculate rates (bytes per second)
+  net_rx_bps="$(( (rx_bytes2 - rx_bytes) * 10 ))"
+  net_tx_bps="$(( (tx_bytes2 - tx_bytes) * 10 ))"
+}
+
+# ----- Disk I/O rates -----
+probe_disk_io() {
+  local dev sectors_read sectors_read2 sectors_write sectors_write2
+  
+  # Try to use the first block device (usually sda or nvme0n1)
+  dev="$(lsblk -d -n -o NAME 2>/dev/null | head -n1)" || return
+  if [ -z "$dev" ]; then
+    return
+  fi
+
+  # Read initial values
+  sectors_read="$(cat "/sys/block/$dev/stat" 2>/dev/null | awk '{print $3}')" || return
+  sectors_write="$(cat "/sys/block/$dev/stat" 2>/dev/null | awk '{print $7}')" || return
+  
+  # Wait a short interval
+  sleep 0.1
+  
+  # Read final values
+  sectors_read2="$(cat "/sys/block/$dev/stat" 2>/dev/null | awk '{print $3}')" || return
+  sectors_write2="$(cat "/sys/block/$dev/stat" 2>/dev/null | awk '{print $7}')" || return
+  
+  # Calculate rates (bytes per second), assuming 512-byte sectors
+  disk_read_bps="$(( (sectors_read2 - sectors_read) * 5120 ))"  # *512/0.1
+  disk_write_bps="$(( (sectors_write2 - sectors_write) * 5120 ))"
+}
+
 # Public: gather everything in one go
 collect_all_metrics() {
-  probe_os_identity
+  log_debug "Starting metrics collection"
+  
+  # Run the faster probes first
+  probe_os_identity &
+  probe_process_count &
+  probe_power_profile &
+  
+  # Run medium-speed probes
   probe_battery
   probe_cpu
   probe_cpu_temp
   probe_memory
   probe_disk
-  probe_iowait
   probe_uptime
+  probe_audio
+  
+  # Run the GPU probes (might be slow with some drivers)
+  discover_gpu_tools
+  gpu_temp="$(probe_gpu_temp)"
+  gpu_util_pct="$(probe_gpu_util)"
+  gpu_mem_pct="$(probe_gpu_memory)"
+  
+  # Run I/O probes (these need to measure over time)
+  probe_iowait
+  probe_network_bandwidth
+  probe_disk_io
   probe_network
   probe_top_process
-  probe_audio
-  probe_power_profile
-
-  cpu_util_pct="$(to_int_pct "${cpu_util_pct}")"
-  ram_pct="$(to_int_pct "${ram_pct}")"
-  swap_pct="$(to_int_pct "${swap_pct}")"
-  disk_pct="$(to_int_pct "${disk_pct}")"
-  iowait_pct="$(to_int_pct "${iowait_pct}")"
-  uptime_h="$(to_int_pct "${uptime_h}")"
-  wifi_signal="$(to_int_pct "${wifi_signal}")"
-  volume_pct="$(to_int_pct "${volume_pct}")"
+  
+  # Wait for background probes
+  wait
+  
+  log_debug "Metrics collection complete"
 }
