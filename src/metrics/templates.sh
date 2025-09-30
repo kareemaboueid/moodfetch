@@ -59,10 +59,10 @@ uptime_zombie_tpl=(
   "We crossed {uptime_h} hours. Not a server farm. I have feelings. Mostly sarcasm."
 )
 
-wifi_weak_tpl=(
-  "Wi-Fi signal {wifi_signal}%% on {iface}: I'm whispering to the router from another dimension."
-  "Signal at {wifi_signal}%% — I've seen stronger commitments in comment sections."
-  "Your Wi-Fi bars are doing minimalism. Connectivity by interpretive art."
+net_offline_tpl=(
+  "Network interface '{iface}' offline: Operating in splendid digital isolation."
+  "No network detected — functioning perfectly without the chaos of the internet."
+  "Network offline: Enjoying the silence of disconnected productivity."
 )
 
 audio_muted_tpl=(

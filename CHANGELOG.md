@@ -1,6 +1,32 @@
 # Changelog
 
-## [0.4.10]
+## Latest
+
+- **Removed version support completely**
+  - Deleted --version and --check-update CLI flags
+  - Removed version.sh module and all version tracking
+  - Cleaned up version references from documentation
+  - Simplified CLI interface to focus on core mood functionality
+
+- **Complete offline refactoring**: Removed all network-dependent features
+  - Disabled update checking that used curl/GitHub API
+  - Removed Wi-Fi signal strength detection via nmcli  
+  - Replaced wifi_weak_tpl with net_offline_tpl for better offline experience
+  - All functionality now operates completely offline for faster, more reliable execution
+
+- **Improved user experience with placeholder output**
+  - Added temporary "hmm..." placeholder during mood generation
+  - Implements clean terminal clearing using ANSI escape sequences
+  - Provides immediate feedback while system metrics are being collected
+  - Works consistently across most Linux terminal environments
+
+- **Enhanced stability and safety**
+  - Added numeric validation to prevent arithmetic errors in mood engine
+  - Improved error handling for system metrics collection
+  - Updated humor and fallback messages to remove network references
+  - Better handling of edge cases in process and network checks
+
+## Previous Release
 
 - Removed weather functionality for offline-only moods
   - Eliminated external API dependencies (ipinfo.io, wttr.in)
@@ -16,7 +42,7 @@
   - Enhanced error handling throughout the codebase
   - Improved production stability and reliability
 
-## [0.4.9]
+## Historical Release
 
 - Fixed incorrect module sourcing path in metrics.sh
   - Corrected os_detect.sh import path from script_dir to metrics subdirectory
@@ -40,7 +66,7 @@
   - Simplified collect_all_metrics function for Linux-only support
   - Added warning for unsupported operating systems
 
-## [0.4.8]
+## Historical Release
 
 - Reorganized project structure
   - Created organized directory hierarchy
@@ -57,7 +83,7 @@
   - Improved installation instructions
   - Updated configuration guide
 
-## [0.4.7]
+## Historical Release
 
 - Simplified project structure
   - Removed theme system in favor of classic sarcastic personality
@@ -69,7 +95,7 @@
   - Removed unused theme management code
   - Optimized template loading
 
-## [0.4.6]
+## Historical Release
 
 - Refactored for Linux-only support
   - Removed macOS and BSD support modules
@@ -82,7 +108,7 @@
   - Removed cross-platform compatibility overhead
   - Faster metric collection using native Linux APIs
 
-## [0.4.5]
+## Historical Release
 
 - Added comprehensive signal handling
   - Added signals.sh module for graceful process management
@@ -94,7 +120,7 @@
   - Improved temporary file handling
   - Safer resource management
 
-## [0.4.4]
+## Historical Release
 
 - Added version management system
   - Added version.sh module for version handling
@@ -106,7 +132,7 @@
   - Updated CLI flag documentation
   - Added update checking instructions
 
-## [0.4.3]
+## Historical Release
 
 - Added comprehensive theme system
   - New theme manager with support for custom themes
@@ -121,7 +147,7 @@
   - Documented theme system architecture
   - Added custom theme examples
 
-## [0.4.2]
+## Historical Release
 
 - Added comprehensive cross-platform support
   - New OS detection module with platform-specific capabilities
@@ -136,7 +162,7 @@
   - Cross-platform compatibility notes
   - Updated installation instructions
 
-## [0.4.1]
+## Historical Release
 
 - Added comprehensive GPU metrics collection with multi-vendor support
   - Temperature monitoring for NVIDIA, Intel, and AMD GPUs
@@ -157,7 +183,7 @@
   - Process count warning levels
   - Disk I/O warning thresholds
 
-## [0.4.0]
+## Historical Release
 
 - Added robust error handling and logging system
 - Added --debug flag for troubleshooting
@@ -172,19 +198,19 @@
 - Made color scheme, ASCII art preferences, and metrics display configurable
 - Updated installation to include example config file
 
-## [0.3.2]
+## Historical Release
 
 - Removed unused `gpu_model` metric probe to simplify codebase.
 - Unified version number across CLI and CHANGELOG (now 0.3.2).
 - Improved help message with full options table + tip for syntax check.
 - Placeholders with empty values now default to "N/A" for clarity.
 
-## [0.3.1]
+## Historical Release
 
 - Removed unused `{gpu_model}` placeholder from templates and rendering logic.
 - Cleaned utils.sh keys list to match active placeholders only.
 
-## [0.3.0]
+## Historical Release
 
 - Removed `clear` before printing output; mood now appears inline without screen wipe.
 - Standardized missing metric values to `N/A` instead of `?`.
@@ -194,113 +220,113 @@
 - Updated README with options table and contributing section.
 - Added `install.sh` as alternative to Makefile installation.
 
-## [0.2.16]
+## Historical Release
 
 - Auto-detect non-TTY environments and disable ANSI colors automatically.
 - Prevents ugly escape sequences when piping output to files or logs.
 
-## [0.2.15]
+## Historical Release
 
 - Made GPU probe more flexible.
 - Added fallbacks: `glxinfo` and `vainfo` if `lspci` is unavailable.
 - Gracefully leaves GPU field blank if no tools are present.
 
-## [0.2.14]
+## Historical Release
 
 - Improved Wi-Fi detection fallback.
 - Now avoids false positives on systems without Wi-Fi hardware.
 - `wifi_signal` stays empty if no Wi-Fi interfaces exist.
 
-## [0.2.13]
+## Historical Release
 
 - Added faster offline weather fallback when curl returns empty or internet is down.
 - Weather now prints a default sarcastic line instead of stalling.
 
-## [0.2.12]
+## Historical Release
 
 - Auto-disable ANSI colors when output is not a TTY.
 - "Mood" header now prints in plain text when piped or redirected.
 
-## [0.2.11]
+## Historical Release
 
 - Extended GPU model probe with multiple optional tools (`lspci`, `glxinfo`, `nvidia-smi`).
 - Added graceful fallback when none available.
 
-## [0.2.10]
+## Historical Release
 
 - Improved Wi-Fi detection to avoid false positives on non-Wi-Fi systems.
 - Added graceful fallback when no interface or signal data available.
 
-## [0.2.9]
+## Historical Release
 
 - Weather check now fast-fails if internet is offline, avoiding hangs when curl returns empty.
 - Added offline fallback message for weather moods.
 
-## [0.2.8]
+## Historical Release
 
 - Replaced `--metrics` flag with `--verbose` for clarity.
 - `--verbose` now shows metrics summary and keeps numbers inside mood text.
 
-## [0.2.7]
+## Historical Release
 
 - Added automatic stripping of numeric metrics from mood text unless `--metrics` is specified.
 - Mood messages now stay sarcastic without exposing raw percentages by default.
 
-## [0.2.6]
+## Historical Release
 
 - Added `--no-ascii` flag to disable ASCII art logo in output.
 - Updated help message to show available options.
 
-## [0.2.5]
+## Historical Release
 
 - Cleaned output: by default moods no longer show raw numbers.
 
-## [0.2.4]
+## Historical Release
 
 - Added basic CLI flags:
   - `--no-ascii` → skip ASCII art
   - `--metrics` → print metrics summary after mood
   - `--version` → show version
 
-## [0.2.3]
+## Historical Release
 
 - Improved performance of CPU/I/O probes by reducing sleeps and adding fast exits.
 - Weather moods now use curl with short timeouts (1.5s) and fail fast if unreachable.
 
-## [0.2.2]
+## Historical Release
 
 - Refactor: modularize project into `moodfetch`, `metrics.sh`, `mood_engine.sh`, `templates.sh`, and `utils.sh`.
 
-## [0.2.1]
+## Historical Release
 
 - Added random witty fallback moods when all else is boring.
 
-## [0.2.0]
+## Historical Release
 
 - Added temperature moods.
 - Added audio/volume moods (works if `pactl` or `amixer` is installed)
 - Both new sensors act as late-stage fallbacks after network and disk checks.
 
-## [0.1.9]
+## Historical Release
 
 - Added process count moods.
 
-## [0.1.8]
+## Historical Release
 
 - Added time-of-day moods.
 - Time-of-day moods trigger as the ultimate fallback.
 
-## [0.1.7]
+## Historical Release
 
 - Re-introduced uptime moods as the final fallback:
 - Guarantees Moodfetch always prints something smart and expressive.
 
-## [0.1.6]
+## Historical Release
 
 - Added network connectivity moods:
 - Network moods trigger when disk usage looks fine.
 
-## [0.1.5]
+## Historical Release
 
 - Added disk usage moods:
   - Spacious (<70%)
@@ -308,7 +334,7 @@
   - Suffocating (>=90%)
 - Terminal now clears before showing ASCII art and mood.
 
-## [0.1.4]
+## Historical Release
 
 - Added RAM usage moods.
 - Memory moods trigger when CPU load is normal:
@@ -316,7 +342,7 @@
   - Cluttered (<80%)
   - Jammed (>=80%)
 
-## [0.1.3]
+## Historical Release
 
 - Added CPU load moods (normalized by core count).
 - Three sarcastic ranges:
@@ -325,12 +351,12 @@
   - Overloaded (>=1.0)
 - CPU moods are used when no battery is detected.
 
-## [0.1.2]
+## Historical Release
 
 - Added battery metrics with moods.
 - Battery moods override uptime moods when available.
 
-## [0.1.1]
+## Historical Release
 
 - Added uptime metric in hours.
 - Introduced sarcastic uptime-based moods:
@@ -339,6 +365,6 @@
   - Zombie (24h+)
 - Added `README.md`.
 
-## [0.1.0] - initial commit
+## Historical Release - initial commit
 
 - Initial release of Moodfetch.

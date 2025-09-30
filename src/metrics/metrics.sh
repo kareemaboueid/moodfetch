@@ -146,11 +146,10 @@ probe_network() {
   if [ -z "${iface}" ]; then
     iface="$(ip -o link 2>/dev/null | awk -F': ' '{print $2}' | head -n1)"
   fi
-  if has_cmd nmcli && printf '%s' "${iface}" | grep -qiE 'wl|wifi|wlan'; then
-    wifi_signal="$(nmcli -t -f ACTIVE,SIGNAL dev wifi | awk -F: '$1=="yes"{print $2; exit}')"
-  else
-    wifi_signal=""
-  fi
+  # Wi-Fi signal detection disabled for offline-only operation
+  # All network moods now based on interface status only
+  wifi_signal=""
+  log_debug "Wi-Fi signal checking disabled (offline mode)"
 }
 
 # ----- Top process -----

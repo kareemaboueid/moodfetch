@@ -43,14 +43,11 @@ Basic usage:
 
 ```bash
 moodfetch           # Display system mood
-moodfetch --version # Show version information
-moodfetch --check-update # Check for updates
 ```
 
 Available options:
 
-- `--version`: Display version information
-- `--check-update`: Check for available updates
+- `--debug`: Enable debug logging for troubleshooting
 
 ## Configuration
 

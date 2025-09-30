@@ -14,7 +14,7 @@ CONFIGDIR := $(SRCDIR)/config
 # Verify Linux environment
 check_linux:
 	@if [ "$$(uname -s)" != "Linux" ]; then \
-		echo "Error: This version only supports Linux"; \
+		echo "Error: moodfetch only supports Linux"; \
 		exit 1; \
 	fi
 

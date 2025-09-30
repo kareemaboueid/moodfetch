@@ -21,7 +21,7 @@ fi
 
 # Source our modules (quietly). Each module guards its own functions.
 # Core modules
-for f in "utils.sh" "logging.sh" "version.sh" "signals.sh"; do
+for f in "utils.sh" "logging.sh" "signals.sh"; do
   module_path="${script_dir}/core/${f}"
   if [ ! -f "$module_path" ]; then
     echo "Missing core module: ${f}. Please reinstall Moodfetch." >&2
@@ -69,14 +69,6 @@ init_os_detect
 # Parse command line arguments
 for arg in "$@"; do
   case "$arg" in
-    --version)
-      print_version
-      exit 0
-      ;;
-    --check-update)
-      check_for_updates
-      exit 0
-      ;;
     --debug)
       enable_debug
       shift
@@ -86,7 +78,6 @@ for arg in "$@"; do
       echo ""
       echo "Options:"
       echo "  --debug           Enable debug logging"
-      echo "  --version         Show version and exit"
       echo "  --help, -h        Show this help and exit"
       echo ""
       echo "Tip: You can run 'bash -n *.sh' inside the repo to validate syntax quickly."
@@ -108,6 +99,9 @@ main() {
   fi
   echo ""
 
+  # Show temporary placeholder while processing
+  printf "hmm..."
+
   # 1) Collect system metrics (best-effort & portable)
   collect_all_metrics
 
@@ -115,8 +109,9 @@ main() {
   local final_mood
   final_mood="$(mood_engine_pick)"
 
-  # Print the mood
-  echo "${final_mood}"
+  # Clear the placeholder and print the real mood
+  # Use carriage return + ANSI clear line for clean output across terminals
+  printf "\r\e[K%s\n" "${final_mood}"
 }
 
 # ------

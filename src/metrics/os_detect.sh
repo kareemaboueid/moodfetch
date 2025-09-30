@@ -34,11 +34,11 @@ init_os_detect() {
             ;;
         Darwin)
             CURRENT_OS="$OS_MACOS"
-            log_warn "macOS detected but not supported in this version"
+            log_warn "macOS detected but not supported"
             ;;
         FreeBSD|OpenBSD|NetBSD)
             CURRENT_OS="$OS_BSD"
-            log_warn "BSD detected but not supported in this version"
+            log_warn "BSD detected but not supported"
             ;;
         *)
             CURRENT_OS="$OS_UNKNOWN"

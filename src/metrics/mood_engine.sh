@@ -10,7 +10,9 @@ random_witty_fallback() {
     "Pretending to be busy while waiting for cron jobs."
     "Dreaming of electric sheep, but stuck with your tabs."
     "Running fine, but spiritually fragmented."
-    "Mood stable — unlike your Wi-Fi."
+    "Mood stable — unlike your system uptime."
+    "Processing life at optimal mediocrity."
+    "Functioning within acceptable parameters of chaos."
   )
   local size="${#fallbacks[@]}"
   echo "${fallbacks[$((RANDOM % size))]}"
@@ -80,11 +82,11 @@ mood_engine_pick() {
     fi
   fi
 
-  # Net-ish checks (very light best-effort)
+  # Network interface checks (offline-only, no signal strength)
   if [ -z "${category}" ]; then
-    # if no wifi_signal and iface seems wifi-like, call it weak (very rough)
-    if [ -z "${wifi_signal}" ] && printf '%s' "${iface}" | grep -qiE 'wl|wifi|wlan'; then
-      category="wifi_weak_tpl"
+    # Check if network interface is down (offline mode)
+    if [ -z "${iface}" ] || [ "${iface}" = "lo" ]; then
+      category="net_offline_tpl"
     fi
   fi
 
@@ -100,16 +102,21 @@ mood_engine_pick() {
 
   # Network stress check (if significant bandwidth usage)
   if [ -z "${category}" ] && [ -n "${net_rx_bps}" ] && [ -n "${net_tx_bps}" ]; then
-    rx_mb="$((net_rx_bps / 1000000))"  # Convert to MB/s
-    tx_mb="$((net_tx_bps / 1000000))"
-    if [ "$rx_mb" -gt "${CONFIG_NET_HIGH:-50}" ] || [ "$tx_mb" -gt "${CONFIG_NET_HIGH:-50}" ]; then
-      category="net_busy_tpl"
+    # Add numeric validation to prevent arithmetic errors
+    if [[ "${net_rx_bps}" =~ ^[0-9]+$ ]] && [[ "${net_tx_bps}" =~ ^[0-9]+$ ]]; then
+      rx_mb="$((net_rx_bps / 1000000))"  # Convert to MB/s
+      tx_mb="$((net_tx_bps / 1000000))"
+      if [ "$rx_mb" -gt "${CONFIG_NET_HIGH:-50}" ] || [ "$tx_mb" -gt "${CONFIG_NET_HIGH:-50}" ]; then
+        category="net_busy_tpl"
+      fi
     fi
   fi
 
   # Process overload check
-  if [ -z "${category}" ] && [ -n "${process_count}" ] && [ "${process_count}" -gt "${CONFIG_PROC_HIGH:-500}" ]; then
-    category="proc_high_tpl"
+  if [ -z "${category}" ] && [ -n "${process_count}" ] && [[ "${process_count}" =~ ^[0-9]+$ ]]; then
+    if [ "${process_count}" -gt "${CONFIG_PROC_HIGH:-500}" ]; then
+      category="proc_high_tpl"
+    fi
   fi
 
   # Default calm
