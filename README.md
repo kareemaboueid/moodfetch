@@ -25,29 +25,74 @@ Moodfetch displays your system's "mood" by fetching and presenting various syste
 
 ## Install
 
-```bash
-git clone https://github.com/kareemaboueid/moodfetch.git
-```
+### Quick Local Setup (Recommended)
+
+Simple, safe, and no system modifications required:
 
 ```bash
+git clone https://github.com/kareemaboueid/moodfetch.git
 cd moodfetch
+chmod +x moodfetch
+./moodfetch
 ```
+
+That's it! You can now use `./moodfetch` from anywhere within the repository directory.
+
+**Benefits of local usage:**
+
+- ✅ No sudo required
+- ✅ Easy to update with `git pull`
+- ✅ No system files modified
+- ✅ Easy to uninstall (just delete the directory)
+
+### Optional: Global Installation
+
+If you want to run `moodfetch` from anywhere on your system, use one of these methods:
+
+#### Option 1: Using make (recommended)
 
 ```bash
 sudo make install
 ```
+
+#### Option 2: Using the installation script
+
+```bash
+sudo ./install.sh
+```
+
+> **Note:** Simple copying to `/usr/local/bin/` won't work because moodfetch requires its module files to be properly installed in the system directories.
 
 ## Usage
 
 Basic usage:
 
 ```bash
-moodfetch           # Display system mood
+./moodfetch         # Local usage (from repo directory)
+# or
+moodfetch           # Global usage (if installed globally)
 ```
 
 Available options:
 
 - `--debug`: Enable debug logging for troubleshooting
+
+## Updating
+
+### Local Installation
+
+```bash
+cd moodfetch
+git pull
+```
+
+### Global Installation
+
+```bash
+cd moodfetch
+git pull
+sudo make install
+```
 
 ## Configuration
 

@@ -2,6 +2,13 @@
 
 ## Latest
 
+- **Improved installation documentation**
+  - Added simple local setup as the recommended installation method
+  - No sudo required, safer and easier for users
+  - Clear instructions for both local and global usage
+  - Added updating instructions for both installation types
+  - Clarified that global installation requires proper installers
+
 - **Added lightweight update notifier**
   - Non-blocking update checks using git ls-remote or GitHub API fallback
   - Fast 1.5s timeout to avoid delays in mood generation
