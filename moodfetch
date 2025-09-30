@@ -62,9 +62,6 @@ init_signal_handlers
 # Initialize configuration system
 init_config
 
-# Initialize OS detection now that all utilities are loaded
-init_os_detect
-
 # --- Update checking functions (only works in git repositories) ---
 check_for_updates() {
     # Only check if we're in a git repository - graceful skip otherwise
@@ -134,27 +131,10 @@ show_update_notification() {
 }
 
 # Initialize OS detection now that all utilities are loaded
+init_os_detect
 
-# --- Parse flags (simple getopt-style) ---
-# Parse command line arguments
-for arg in "$@"; do
-  case "$arg" in
-    --debug)
-      enable_debug
-      shift
-      ;;
-    --help|-h)
-      echo "Usage: moodfetch [options]"
-      echo ""
-      echo "Options:"
-      echo "  --debug           Enable debug logging"
-      echo "  --help, -h        Show this help and exit"
-      echo ""
-      echo "Tip: You can run 'bash -n *.sh' inside the repo to validate syntax quickly."
-      exit 0
-      ;;
-  esac
-done
+# Check for updates if we're in a git repository
+check_for_updates
 
 # --- MAIN ---
 main() {
